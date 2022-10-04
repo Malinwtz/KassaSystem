@@ -1,0 +1,4 @@
+﻿300; Banan; Per kilo; 26,95 
+301; Potatis; Per kilo; 14,50
+302; Gurka; Per styck; 23,95
+303; Oliver; Per styck; 29,50
