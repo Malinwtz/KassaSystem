@@ -37,16 +37,17 @@ namespace KassaSystem
                     //ChangeProduct
                     //PromotionalPrice
                 }
-                if (sel == "3")
+                if (sel == "0")
                     break;
             }
             Console.WriteLine("Avslutar kassasystem");
         }
         private void ShowMenu()
         {
+            Console.WriteLine("KASSA");
             Console.WriteLine("1.Ny kund");
             Console.WriteLine("2.Administreringsverktyg");
-            Console.WriteLine("3.Avsluta");
+            Console.WriteLine("0.Avsluta");
             Console.WriteLine(" ");
             Console.WriteLine("Ange val");
         }
@@ -63,7 +64,7 @@ namespace KassaSystem
                     Console.WriteLine("Ogiltig produktkod");
                 else
                 {
-                    Console.WriteLine($"{prod1.Name}: {prod1.Price}kr {prod1.Unit}"); //var price = Convert.ToDecimal(Console.ReadLine());
+                    Console.WriteLine($"{prod1.ProductName}: {prod1.ProductPrice}kr {prod1.ProductUnit}"); //var price = Convert.ToDecimal(Console.ReadLine());
                     break;
                 }
             }
@@ -71,11 +72,11 @@ namespace KassaSystem
             Console.WriteLine("Ange antal styck- eller kilo:"); //felhantering 
             Int32.TryParse(Console.ReadLine(), out int numbersOf);
 
-            var totalPrice = CalculateTotalPrice( numbersOf, Convert.ToDecimal(prod1.Price)); 
+            var totalPrice = CalculateTotalPrice( numbersOf, Convert.ToDecimal(prod1.ProductPrice)); 
 
             //all info lägger vi in på samma rad i filen nedan
             var fileName = DateTime.Now.ToString("yyy-MM-dd") + ".txt"; //relativ sökväg skickas in i filename
-            var line = $"{prod1.Name}:{prod1.Price}kr {prod1.Unit}, {totalPrice}kr"; //sparar inskriven data till en stringvariabel 
+            var line = $"{prod1.ProductName}:{prod1.ProductPrice}kr {prod1.ProductUnit}, {totalPrice}kr"; //sparar inskriven data till en stringvariabel 
             Console.WriteLine($"Sparar {line} i fil: {fileName}");
 
             //lägg till all inskriven data i EN rad sist i filen
@@ -122,13 +123,8 @@ namespace KassaSystem
                                                                 //ReadAllLines läser ALLA rader och tar upp ram-minne //ReadLines läser EN rad i taget. använd därför denna.
             {
                 var parts = line.Split(';'); //Split tar en sträng (line i det här fallet) och stoppar in stringdelarna i en array.
-                var product = new Products //skapar nytt objekt av products där strängarna blir properties
-                {
-                    ProductID = parts[0],
-                    Name = parts[1],
-                    Unit = parts[2],
-                    Price = Convert.ToDecimal(parts[3]),
-                }; 
+                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3])); //skapar nytt objekt av products där strängarna blir properties
+                
                 result.Add(product);
             }
                 
@@ -138,4 +134,7 @@ namespace KassaSystem
             return result;
         }
     }
-}
+}// parse + int : 300 4 
+
+//adm i en ny mapp
+//kvittoklass
