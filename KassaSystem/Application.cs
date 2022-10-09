@@ -25,17 +25,15 @@ namespace KassaSystem
                     bool register = true;
                     while (register)
                     {
-                        register = ProductRegistration(allProducts);
+                        ProductRegistration(allProducts);
+                        break;
                     }
                     //break; avslutar program helt
                 }
                 if (sel == "2")
                 {
                     //Adm
-                    //NewProduct
-                    //DeleteProduct
-                    //ChangeProduct
-                    //PromotionalPrice
+                   
                 }
                 if (sel == "0")
                     break;
@@ -51,60 +49,82 @@ namespace KassaSystem
             Console.WriteLine(" ");
             Console.WriteLine("Ange val");
         }
-        private bool ProductRegistration(List<Products> allProducts)
+        private void ProductRegistration(List<Products> allProducts)
         {
-            Products prod1; 
+            bool register = true;
             while (true)
             {
-                Console.WriteLine("Ange produktID:");
-                var productID = Console.ReadLine();
+                var userInput = new string[2];
+                var numberOfProducts = 0;
+                Products product1;
+
+                while (true) //kolla om produktID finns
+                {
+                    
+                    Console.WriteLine("Ange produktID och antal (*** *):");
+                    userInput = Console.ReadLine().Trim().Split(' ');  //userInput[0] är ID och userInput[1] är antal produkter
+
+
+                    //       product.ProductID = userInput[0];
+
+                    product1 = FindProductFromProductID(allProducts, userInput[0]); //[0] är produktid och [1] är antal
+                    if (product1 == null)
+                        Console.WriteLine("Ogiltig produktkod");
+                    else
+                    {
+                        numberOfProducts = TryInputNumberOfProducts(userInput[1]);  //om antal skrivs in med bokstäver blir numberofproducts 0
+                        break;
+                    }
+                }
                 
-                prod1 = FindProductFromProductID(allProducts, productID);
-                if (prod1 == null)
-                    Console.WriteLine("Ogiltig produktkod");
+                    var totalPrice = CalculateTotalPrice(numberOfProducts, Convert.ToDecimal(product1.ProductPrice));
+
+                    Console.WriteLine($"{product1.ProductName}: {product1.ProductPrice}kr {product1.ProductUnit}"); //var price = Convert.ToDecimal(Console.ReadLine());
+
+                    var fileName = DateTime.Now.ToString("yyy-MM-dd") + ".txt"; //all info lägger vi in på samma rad i filen //relativ sökväg skickas in i filename
+                    var line = $"{product1.ProductName}:{product1.ProductPrice}kr {product1.ProductUnit}, {totalPrice}kr"; //sparar inskriven data till en stringvariabel 
+                    Console.WriteLine($"Sparar {line} i fil: {fileName}");
+
+                    File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till all inskriven data i EN rad sist i filen //environment.newline för att få en ny rad i filen. 
+
+                    Console.WriteLine("Tryck på enter för att fortsätta inskrivning eller skriv avbryt för att avbryta inskrivning");
+                    var answer = Console.ReadLine().ToLower();
+                    if (answer == "avbryt")
+                    {  
+                        break;
+                    }
+                   
+                
+                //Console.WriteLine("Avsluta = 0");
+                //var uInput = Console.ReadLine();
+                //if (uInput == "0")
+                //    break;
+            }
+        }
+
+        private int TryInputNumberOfProducts(string userInput)
+        {
+            
+            while (true)
+            {
+               
+                Int32.TryParse(userInput, out int numberOfProducts); //gör om antal produkter till int
+                
+                if (numberOfProducts >= 0)
+                {
+                    return numberOfProducts;
+                    break;
+                }   
                 else
                 {
-                    Console.WriteLine($"{prod1.ProductName}: {prod1.ProductPrice}kr {prod1.ProductUnit}"); //var price = Convert.ToDecimal(Console.ReadLine());
-                    break;
+                    Console.WriteLine("Antal produkter är i fel format");
+                    userInput = Console.ReadLine();
+                    continue;
                 }
+                    
             }
-
-            Console.WriteLine("Ange antal styck- eller kilo:"); //felhantering 
-            Int32.TryParse(Console.ReadLine(), out int numbersOf);
-
-            var totalPrice = CalculateTotalPrice( numbersOf, Convert.ToDecimal(prod1.ProductPrice)); 
-
-            //all info lägger vi in på samma rad i filen nedan
-            var fileName = DateTime.Now.ToString("yyy-MM-dd") + ".txt"; //relativ sökväg skickas in i filename
-            var line = $"{prod1.ProductName}:{prod1.ProductPrice}kr {prod1.ProductUnit}, {totalPrice}kr"; //sparar inskriven data till en stringvariabel 
-            Console.WriteLine($"Sparar {line} i fil: {fileName}");
-
-            //lägg till all inskriven data i EN rad sist i filen
-            File.AppendAllText(fileName, line + Environment.NewLine); //environment.newline för att få en ny rad i filen. 
-
-            Console.WriteLine("Tryck på enter för att fortsätta inskrivning eller skriv avbryt för att avbryta inskrivning");
-            var answer = Console.ReadLine().ToLower();
-            if (answer == "avbryt")
-                return false;
-            return true;
+            
         }
-
-        private decimal CalculateTotalPrice(int numberOfProducts, decimal price)
-        {   
-            var totalPrice = price * numberOfProducts;
-            return totalPrice;
-        }
-
-        //Products prod2; // gör metoder av dessa
-        //while (true)
-        //{
-        //    Console.WriteLine("Ange produktID:"); //300 2
-        //    var productID = Console.ReadLine();
-        //    prod2 = FindProductFromProductID(allProducts, productID);
-        //    if (prod2 == null)
-        //        Console.WriteLine("Ogiltig produktkod");
-        //    else break;
-        //}
 
         private Products FindProductFromProductID(List<Products> allProducts, string prod)
         {
@@ -133,6 +153,22 @@ namespace KassaSystem
             //returnera listan
             return result;
         }
+        private decimal CalculateTotalPrice(int numberOfProducts, decimal price)
+        {
+            var totalPrice = price * numberOfProducts;
+            return totalPrice;
+        }
+
+        //Products prod2; // gör metoder av dessa
+        //while (true)
+        //{
+        //    Console.WriteLine("Ange produktID:"); //300 2
+        //    var productID = Console.ReadLine();
+        //    prod2 = FindProductFromProductID(allProducts, productID);
+        //    if (prod2 == null)
+        //        Console.WriteLine("Ogiltig produktkod");
+        //    else break;
+        //}
     }
 }// parse + int : 300 4 
 

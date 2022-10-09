@@ -13,7 +13,7 @@ namespace KassaSystem.Models
         private string productName;
         private string productUnit;
         private decimal productPrice;
-        public Products(string productID, string productName, string productUnit, decimal productPrice )
+        public Products(string productID, string productName, string productUnit, decimal productPrice)
         {
             this.productID = productID;
             this.productName = productName;
@@ -23,6 +23,7 @@ namespace KassaSystem.Models
         public string ProductID
         {
             get { return productID; }
+            set { productID = value; }
         }
         public string ProductName
         {
