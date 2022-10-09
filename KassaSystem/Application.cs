@@ -15,7 +15,9 @@ namespace KassaSystem
         {   
             //var allProducts = new List<Products>(); 
             var allProducts = ReadProductsFromFile();  // använd listan när vi kör //kodmeny nedan kan ligga i egen funktion
-
+            decimal totalPrice = 0;
+            decimal partOfTotalPrice = 0;
+            Products product;
             while (true)
             {
                 ShowMenu();
@@ -24,11 +26,16 @@ namespace KassaSystem
                 {
                     bool register = true;
                     while (register)
-                    {
-                        ProductRegistration(allProducts);
-                        break;
+                    {   
+                        product = ProductRegistration(allProducts); //returnera lista och ? produkter här
+                        var pay = Console.ReadLine();   
+                        if (pay.ToLower() == "pay")
+                            Pay(); //skicka in lista med produkter här
+
+
                     }
-                    //break; avslutar program helt
+                    
+                  
                 }
                 if (sel == "2")
                 {
@@ -37,26 +44,39 @@ namespace KassaSystem
                 }
                 if (sel == "0")
                     break;
+
+                 Console.WriteLine($"KVITTO {DateTime.Now.ToString("yyy-MM-dd-HH-mm-ss")}");
+                 Console.WriteLine($"Total: {totalPrice}");
             }
             Console.WriteLine("Avslutar kassasystem");
         }
+
+        private void Pay(List<Products> products, int total)         //spara ner allt till en fil 
+        {
+            var fileName = DateTime.Now.ToString("yyy-MM-dd") + ".txt"; //all info lägger vi in på samma rad i filen //relativ sökväg skickas in i filename
+            var line = "";
+            foreach (var product in products)
+            {
+                line = $"{product.ProductName}:{product.ProductPrice}kr {product.ProductUnit}, {total}kr"; //sparar inskriven data till en stringvariabel 
+                Console.WriteLine($"Sparar {line} i fil: {fileName}");
+            
+                File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till all inskriven data i EN rad sist i filen //environment.newline för att få en ny rad i filen. 
+            }
+        }
+
         private void ShowMenu()
         {
             Console.WriteLine("KASSA");
             Console.WriteLine("1.Ny kund");
             Console.WriteLine("2.Administreringsverktyg");
             Console.WriteLine("0.Avsluta");
-            Console.WriteLine(" ");
-            Console.WriteLine("Ange val");
         }
-        private void ProductRegistration(List<Products> allProducts)
+        private decimal ProductRegistration(List<Products> allProducts)
         {
-            bool register = true;
-            while (true)
-            {
-                var userInput = new string[2];
-                var numberOfProducts = 0;
-                Products product1;
+            
+            var userInput = new string[2];
+            var numberOfProducts = 0;
+            Products product1;
 
                 while (true) //kolla om produktID finns
                 {
@@ -80,26 +100,9 @@ namespace KassaSystem
                     var totalPrice = CalculateTotalPrice(numberOfProducts, Convert.ToDecimal(product1.ProductPrice));
 
                     Console.WriteLine($"{product1.ProductName}: {product1.ProductPrice}kr {product1.ProductUnit}"); //var price = Convert.ToDecimal(Console.ReadLine());
-
-                    var fileName = DateTime.Now.ToString("yyy-MM-dd") + ".txt"; //all info lägger vi in på samma rad i filen //relativ sökväg skickas in i filename
-                    var line = $"{product1.ProductName}:{product1.ProductPrice}kr {product1.ProductUnit}, {totalPrice}kr"; //sparar inskriven data till en stringvariabel 
-                    Console.WriteLine($"Sparar {line} i fil: {fileName}");
-
-                    File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till all inskriven data i EN rad sist i filen //environment.newline för att få en ny rad i filen. 
-
-                    Console.WriteLine("Tryck på enter för att fortsätta inskrivning eller skriv avbryt för att avbryta inskrivning");
-                    var answer = Console.ReadLine().ToLower();
-                    if (answer == "avbryt")
-                    {  
-                        break;
-                    }
-                   
-                
-                //Console.WriteLine("Avsluta = 0");
-                //var uInput = Console.ReadLine();
-                //if (uInput == "0")
-                //    break;
-            }
+           
+                    
+            return totalPrice;
         }
 
         private int TryInputNumberOfProducts(string userInput)
@@ -108,18 +111,19 @@ namespace KassaSystem
             while (true)
             {
                
-                Int32.TryParse(userInput, out int numberOfProducts); //gör om antal produkter till int
+                Int32.TryParse(userInput, out int numberOfProducts); 
                 
-                if (numberOfProducts >= 0)
-                {
-                    return numberOfProducts;
-                    break;
-                }   
-                else
+                if (numberOfProducts! >= 0)
                 {
                     Console.WriteLine("Antal produkter är i fel format");
                     userInput = Console.ReadLine();
                     continue;
+
+                }   
+                else
+                {
+                    return numberOfProducts;
+                    break;
                 }
                     
             }
