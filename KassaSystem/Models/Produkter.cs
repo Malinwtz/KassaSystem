@@ -13,12 +13,15 @@ namespace KassaSystem.Models
         private string productName;
         private int productUnit;
         private decimal productPrice;
-        public Products(string productID, string productName, int productUnit, decimal productPrice)
+        public Products(string productID)
         {
             this.productID = productID;
-            this.productName = productName;
-            this.productUnit = productUnit;
-            this.productPrice = productPrice;
+            productName = null;
+            productUnit = 0;
+            productPrice = 0;
+            //this.productName = productName;
+            //this.productUnit = productUnit;
+            //this.productPrice = productPrice;
         }
         public string ProductID
         {

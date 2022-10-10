@@ -20,9 +20,9 @@ namespace KassaSystem
             Products product;
             while (true)
             {
-                ShowMenu();
-                var sel = Console.ReadLine();
-                if (sel == "1")
+                var sel =  Menu();
+
+                if (sel == 1)
                 {
                     bool register = true;
                     while (register)
@@ -73,12 +73,12 @@ namespace KassaSystem
                     
                   
                 }
-                if (sel == "2")
+                if (sel == 2)
                 {
                     //Adm
                    
                 }
-                if (sel == "0")
+                if (sel == 3)
                     break;
 
                  Console.WriteLine($"KVITTO {DateTime.Now.ToString("yyy-MM-dd-HH-mm-ss")}");
@@ -99,14 +99,20 @@ namespace KassaSystem
                 File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till all inskriven data i EN rad sist i filen //environment.newline för att få en ny rad i filen. 
             }
         }
-
-        private void ShowMenu()
+        private int Menu()
         {
-            Console.WriteLine("KASSA");
-            Console.WriteLine("1.Ny kund");
-            Console.WriteLine("2.Administreringsverktyg");
-            Console.WriteLine("0.Avsluta");
+            while (true)
+            {
+                Console.WriteLine("KASSA");
+                Console.WriteLine("1.Ny kund");
+                Console.WriteLine("2.Administreringsverktyg");
+                Console.WriteLine("0.Avsluta");
+                var sel = Convert.ToInt32(Console.ReadLine());
+                if (sel > 0 && sel < 4) return sel;    //om valt ett menyval - return var
+                Console.WriteLine("Felaktig input");   //om valt inte menyval - felaktig input, kör loop igen
+            }
         }
+
  //       private decimal ProductRegistration(List<Products> allProducts) { ]
        
 
