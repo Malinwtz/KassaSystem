@@ -11,9 +11,9 @@ namespace KassaSystem.Models
     {
         private string productID;
         private string productName;
-        private string productUnit;
+        private int productUnit;
         private decimal productPrice;
-        public Products(string productID, string productName, string productUnit, decimal productPrice)
+        public Products(string productID, string productName, int productUnit, decimal productPrice)
         {
             this.productID = productID;
             this.productName = productName;
@@ -36,11 +36,13 @@ namespace KassaSystem.Models
                 productName = value; 
             }
         }
-        public string ProductUnit
+        public int ProductUnit
         {
             get { return productUnit; }
             set
             {
+                if (productUnit < 0)
+                    throw new ArgumentException("Felaktig enhet");
                 productUnit = value;
             }
         }
@@ -49,10 +51,23 @@ namespace KassaSystem.Models
             get { return productPrice; }
             set
             {
+                if (productPrice < 0)
+                    throw new ArgumentException("Felaktigt pris");  
                 productPrice = value;
             }
         }
+
+        public Products FindProductFromProductID(List<Products> allProducts, string prod)
+        {
+            foreach (var product in allProducts)
+            {
+                if (product.ProductID.ToLower() == prod.ToLower())
+                    return product;
+            }
+            return null;
+        }
+
     }
-  
+
 }
 

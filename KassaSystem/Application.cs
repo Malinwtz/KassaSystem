@@ -27,11 +27,47 @@ namespace KassaSystem
                     bool register = true;
                     while (register)
                     {   
-                        product = ProductRegistration(allProducts); //returnera lista och ? produkter här
-                        var pay = Console.ReadLine();   
-                        if (pay.ToLower() == "pay")
-                            Pay(); //skicka in lista med produkter här
+                       // product = ProductRegistration(allProducts); //returnera lista och ? produkter här
 
+                        var userInput = new string[2];
+                        var numberOfProducts = 0;
+                        Products product1;
+                        Console.WriteLine("Ange produktID och antal (*** *):");
+                        while (true)
+                        {
+                            
+                            userInput = Console.ReadLine().Trim().Split(' ');  //userInput[0] är ID och userInput[1] är antal produkter
+
+                            product1 = FindProductFromProductID(allProducts, userInput[0]);    //  product.ProductID = userInput[0];
+
+                            while (true) //kolla om produktID finns //kolla om antal stämmer
+                            {
+
+                                if (product1 == null || TryNumberOfProducts(userInput[1]) == false) //produktkod hittas inte || ogiltigt antal produkter
+                                {
+                                    Console.WriteLine("Felaktig input");
+                                    userInput = Console.ReadLine().Trim().Split(' ');
+                                }
+
+                                else if (product1 != null || TryNumberOfProducts(userInput[1]) == true)
+                                {
+
+                                    Console.WriteLine($"{product1.ProductName}: {product1.ProductPrice}kr {product1.ProductUnit}"); //var price = Convert.ToDecimal(Console.ReadLine());
+
+                                    partOfTotalPrice = CalculateTotalPrice(numberOfProducts, Convert.ToDecimal(product1.ProductPrice));
+                                    break;
+                                }
+                            }
+                        }
+
+                        Console.WriteLine("Nu har programmet gått för långt");
+                       
+
+                        //PAY
+                        Console.WriteLine("Kommando PAY");
+                        var pay = Console.ReadLine();   
+                        if (pay.ToUpper() == "PAY")
+                            Pay(allProducts, totalPrice); //sparar till kvitto
 
                     }
                     
@@ -51,7 +87,7 @@ namespace KassaSystem
             Console.WriteLine("Avslutar kassasystem");
         }
 
-        private void Pay(List<Products> products, int total)         //spara ner allt till en fil 
+        private void Pay(List<Products> products, decimal total)         //spara ner allt till en fil 
         {
             var fileName = DateTime.Now.ToString("yyy-MM-dd") + ".txt"; //all info lägger vi in på samma rad i filen //relativ sökväg skickas in i filename
             var line = "";
@@ -71,63 +107,44 @@ namespace KassaSystem
             Console.WriteLine("2.Administreringsverktyg");
             Console.WriteLine("0.Avsluta");
         }
-        private decimal ProductRegistration(List<Products> allProducts)
+ //       private decimal ProductRegistration(List<Products> allProducts) { ]
+       
+
+        private bool TryNumberOfProducts(string userInput)
         {
-            
-            var userInput = new string[2];
-            var numberOfProducts = 0;
-            Products product1;
-
-                while (true) //kolla om produktID finns
-                {
-                    
-                    Console.WriteLine("Ange produktID och antal (*** *):");
-                    userInput = Console.ReadLine().Trim().Split(' ');  //userInput[0] är ID och userInput[1] är antal produkter
-
-
-                    //       product.ProductID = userInput[0];
-
-                    product1 = FindProductFromProductID(allProducts, userInput[0]); //[0] är produktid och [1] är antal
-                    if (product1 == null)
-                        Console.WriteLine("Ogiltig produktkod");
-                    else
-                    {
-                        numberOfProducts = TryInputNumberOfProducts(userInput[1]);  //om antal skrivs in med bokstäver blir numberofproducts 0
-                        break;
-                    }
-                }
-                
-                    var totalPrice = CalculateTotalPrice(numberOfProducts, Convert.ToDecimal(product1.ProductPrice));
-
-                    Console.WriteLine($"{product1.ProductName}: {product1.ProductPrice}kr {product1.ProductUnit}"); //var price = Convert.ToDecimal(Console.ReadLine());
-           
-                    
-            return totalPrice;
-        }
-
-        private int TryInputNumberOfProducts(string userInput)
-        {
-            
+            int numberOfProducts = 0;
             while (true)
             {
-               
-                Int32.TryParse(userInput, out int numberOfProducts); 
-                
-                if (numberOfProducts! >= 0)
+                try
                 {
-                    Console.WriteLine("Antal produkter är i fel format");
-                    userInput = Console.ReadLine();
-                    continue;
-
-                }   
-                else
-                {
-                    return numberOfProducts;
+                    numberOfProducts = Convert.ToInt32(userInput);
+                  //  Int32.TryParse(userInput, out int numberOfProducts);
+                    return true;
                     break;
                 }
-                    
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    userInput = Console.ReadLine();
+                }
+                return false;
             }
+                
             
+                
+                
+                //if (numberOfProducts! >= 0)
+                //{
+                //    Console.WriteLine("Antal produkter är i fel format");
+                //    
+                //    continue;
+
+                //}   
+                //else
+                //{
+                //    return numberOfProducts;
+                //    break;
+                //}
         }
 
         private Products FindProductFromProductID(List<Products> allProducts, string prod)
@@ -147,7 +164,7 @@ namespace KassaSystem
                                                                 //ReadAllLines läser ALLA rader och tar upp ram-minne //ReadLines läser EN rad i taget. använd därför denna.
             {
                 var parts = line.Split(';'); //Split tar en sträng (line i det här fallet) och stoppar in stringdelarna i en array.
-                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3])); //skapar nytt objekt av products där strängarna blir properties
+                var product = new Products(parts[0], parts[1], Convert.ToInt32(parts[2]), Convert.ToDecimal(parts[3])); //skapar nytt objekt av products där strängarna blir properties
                 
                 result.Add(product);
             }
