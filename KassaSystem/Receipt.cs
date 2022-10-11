@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KassaSystem.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,21 +7,44 @@ using System.Threading.Tasks;
 
 namespace KassaSystem
 {
+    public class ReceiptRow
+    {
+        private string _productID;
+        private string _productName;
+        private string _productUnit;
+        private decimal _price;
+        private int _count;
+
+        public ReceiptRow(string productID, string productName, string productUnit, decimal price, int count)
+        {
+            _productID = productID;
+            _productName = productName;
+            _productUnit = productUnit;
+            _price = price;
+            _count = count;
+        }
+        public string ProductID
+        { get { return _productID; } }  
+    }
     internal class Receipt
     {
-
-        public decimal receiptPrice; 
-        public decimal receiptAmount;   
+        private List<ReceiptRow> _receiptRows= new List<ReceiptRow>();
+        private int _serialNumber;
+        public void AddToReceipt(string productID, string productName, string productUnit, decimal price, int count)
+        {
+            foreach(ReceiptRow row in _receiptRows)
+            {
+                if (row.ProductID == productID ) 
+                        count++;
+                else
+                    _receiptRows.Add(new ReceiptRow(productID, productName, productUnit, price, count));
+            }
+        }
         
-
-            //{
-            //    get
-            //    {
-            //        if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
-            //            return Convert.ToInt32(price * 0.8);
-            //        else return price;
-            //    }
-            //}
+        public Receipt()
+        {
+            
+        }
         
     }
 }

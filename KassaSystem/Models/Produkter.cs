@@ -11,23 +11,25 @@ namespace KassaSystem.Models
     {
         private string productID;
         private string productName;
-        private int productUnit;
+        private string productUnit;
         private decimal productPrice;
-        public Products(string productID)
+        private decimal totalPrice;
+        //CONSTRUCTORS
+        public Products() 
+        {
+
+        }
+        public Products(string productID, string productName, string productUnit, decimal productPrice, decimal totalPrice) 
         {
             this.productID = productID;
-            productName = null;
-            productUnit = 0;
-            productPrice = 0;
-            //this.productName = productName;
-            //this.productUnit = productUnit;
-            //this.productPrice = productPrice;
+            this.productName = productName;
+            this.productUnit = productUnit;
+            this.productPrice = productPrice;
+            this.totalPrice = totalPrice;
         }
-        public string ProductID
-        {
-            get { return productID; }
-            set { productID = value; }
-        }
+        //PROPERTIES
+        public string ProductID 
+            { get { return productID; } set { productID = value; } }
         public string ProductName
         {
            get { return productName; }
@@ -39,27 +41,20 @@ namespace KassaSystem.Models
                 productName = value; 
             }
         }
-        public int ProductUnit
-        {
-            get { return productUnit; }
-            set
-            {
-                if (productUnit < 0)
-                    throw new ArgumentException("Felaktig enhet");
-                productUnit = value;
-            }
-        }
+        public string ProductUnit 
+            { get { return productUnit; } set { productUnit = value; } }
         public decimal ProductPrice
         {
             get { return productPrice; }
-            set
-            {
-                if (productPrice < 0)
-                    throw new ArgumentException("Felaktigt pris");  
-                productPrice = value;
-            }
+            set { productPrice = value;}
+        }
+        public decimal TotalPrice
+        {
+            get { return totalPrice; }
+            set { totalPrice = value; } 
         }
 
+        //METHODS
         public Products FindProductFromProductID(List<Products> allProducts, string prod)
         {
             foreach (var product in allProducts)
@@ -69,8 +64,6 @@ namespace KassaSystem.Models
             }
             return null;
         }
-
     }
-
 }
 
