@@ -58,6 +58,10 @@ namespace KassaSystem
         public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
             decimal price, decimal totalPrice, int count)
         {
+            //---LÄGG TILL BANAN * FLERA ISTÄLLET FÖR PÅ FLER OLIKA RADER - SKRIV OM KVITTOT
+            //---MÅSTE SPARAS EN COUNT PÅ KVITTORADEN. OM PRODUKTEN FINNS I LISTAN, ÄNDRA COUNT+1 I KVITTORADEN. 
+            //---ÄNDRA VALD RAD I FILEN
+
             if (_listOfSingleReceipts.Count < 1)
             {
                 _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,

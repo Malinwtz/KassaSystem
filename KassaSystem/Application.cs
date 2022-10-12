@@ -18,113 +18,90 @@ namespace KassaSystem
             //HÄMTAR PRODUKTER FRÅN TEXTFILEN OCH SPARA I EN LISTA ALLPRODUCTS
             var allProducts = ReadProductsFromFile();  
             decimal singleReceiptTotalAmount = 0;
-            decimal receiptTotal = 0;
             
             while (true)
             {
-                var sel =  Menu(); 
+                var sel =  ShowMenu(); 
 
                 if (sel == 1)
                 {
                     Products product1 = new Products();
                     AllReceipts allReceipt = new AllReceipts();
                     Console.Clear();
-                    var pay = "";
-                    var userInput = new string[2];
-                    var numberOfProducts = 0;
 
-                        while (true)
+                    var numberOfProducts = 0; //GÖR OM TILL PROPERTY I SINGLERECEIPT?
+
+                    while (true)
+                    {   
+                        ShowCommands();
+                        //GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
+                        string input = Console.ReadLine().Trim();
+                        var userInput = input.Split(' ');
+                        //LETAR OCH HÄMTAR PRODUKTKOD I LISTAN ALLAPRODUKTER
+                        var currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
+                       
+                        if (input.ToUpper() == "PAY")
                         {
-                            //SKriov en loop som lopar igeniom reciptens receiptrows och skriver
-                            //ut. skriv alltså om kvittot för varje ny vara
-                            Commands();
-                            //GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
-                            string input = Console.ReadLine().Trim();
-                            userInput = input.Split(' ');
-                            //LETAR OCH HÄMTAR PRODUKTKOD I LISTAN ALLAPRODUKTER
-                            var currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
-
-                            //SKriov en loop som lopar igenom listan och skriver ut. 
-                            if (input.ToUpper() == "PAY")
-                            {
                             //VG:kvitto ska ha löpnr. Kanske counter i ++; vid varje pay och lägg till som
                             //variabel när kvittot skickas till filen
                             //FUNKTION SOM LÄSER SENASTE RAD I FILEN? KAN ISF SKRIVA LÖPNR SIST PÅ KVITTOT
                             //OCH LÄSA INNAN BÖRJAN AV NYTT KVITTO
-
-                            Console.Clear();   
-                            Console.WriteLine("KASSA");
-                            Console.WriteLine($"KVITTO {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                                //----SKRIV UT SINGLERECEIPT I KONSOLEN----
-                                //----LISTAN SKRIVS INTE UT -----------------
+                            ShowReceiptHead();
+                             
                             foreach (var row in allReceipt.ListOfSingleReceipts)
-                                { 
-                                //---HOPPAR ÖVER ATT GÅ IN I FOREACH??
-                                    Console.WriteLine($"{row.ProductName} {numberOfProducts} * {row.Price} " +
-                                        $"= {row.Price * numberOfProducts}kr");
-                                }
-                                Console.WriteLine($"Total: {singleReceiptTotalAmount}" + Environment.NewLine);
+                            { 
+                                Console.WriteLine($"{row.ProductName} {numberOfProducts} * {row.Price} " +
+                                    $"= {row.Price * numberOfProducts}kr");
+                            }
+                            Console.WriteLine($"Total: {singleReceiptTotalAmount}" + Environment.NewLine);
                             
-                                
-                                //----DE PRODUKTER SOM SKRIVS IN UNDER LOOPEN SKA SPARAS HÄR I LOOPEN NEDAN
-
                                 //----KVITTOAVSKILJARE MÅSTE FINNAS-------------räcker med mellanrum?
-                                var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt"; //all info lägger vi in på samma rad i filen //relativ sökväg skickas in i filename
+                            var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt"; 
 
                                 //VG: LÄS SPECIFIK RAD I FÖRRA KVITTOT FÖR ATT FÅ NÄSTA NR PÅ KVITTOT---------
                                 var i = 0;
                                 i++;
-                                var numberLine = $"KVITTO NR {i}";
-                                File.AppendAllText(fileName, Environment.NewLine); //SPARAR TOM RAD I KVITTO
-                                File.AppendAllText(fileName, numberLine + Environment.NewLine); //SPARAR KVITTONR
-                                //-----FÖR ATT FÅ NÄSTA NR I ORDNINGEN MÅSTE SENASTE NR LÄSAS FRÅN KVITTOFIL?-------------
+                            var numberLine = $"KVITTO NR {i}";
+                            File.AppendAllText(fileName, Environment.NewLine); //SPARAR TOM RAD I KVITTO
+                            File.AppendAllText(fileName, numberLine + Environment.NewLine); //SPARAR KVITTONR
+                                //-----FÖR ATT FÅ NÄSTA NR I ORDNINGEN KAN SENASTE NR LÄSAS FRÅN KVITTOFIL?-----
 
                                 //FÖR VARJE RAD I LISTAN RECEIPTROWS
-                                foreach (SingleReceipt row in allReceipt.ListOfSingleReceipts)
-                                {   
-                                    var line = ""; 
-                                    line = $"{row.ProductName} {numberOfProducts} * {row.Price} = {row.Price * numberOfProducts}kr"; 
-                                    File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till all inskriven data i EN rad sist i filen //environment.newline för att få en ny rad i filen. 
-                                }
-                                break;
+                            foreach (SingleReceipt row in allReceipt.ListOfSingleReceipts)
+                            {   
+                                var line = ""; 
+                                line = $"{row.ProductName} {numberOfProducts} * {row.Price} = {row.Price * numberOfProducts}kr"; 
+                                File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till data i EN rad sist i fil
                             }
+                            break;
+                        }
 
-                            //OM PRODUKT EJ FINNS ELLER OM ANTAL INSKRIVNA PRODUKTER OGILTIGT
-                            if (currentProduct == null || TryNumberOfProducts(userInput[1]) == false) //produktkod hittas inte || ogiltigt antal produkter
+                        //OM PRODUKT EJ FINNS ELLER OM ANTAL INSKRIVNA PRODUKTER OGILTIGT
+                        if (currentProduct == null || TryNumberOfProducts(userInput[1]) == false) //produktkod hittas inte || ogiltigt antal produkter
                             {
                                 Console.WriteLine("Felaktig input");
                                 continue;
                             }
 
-                            //OM PRODUKT FINNS OCH ANTAL PRODUKTER ÄR GILTIGT
-                            else if (currentProduct != null && TryNumberOfProducts(userInput[1]) == true)
-                            {
-                                //KONVERTERAR ANTAL PRODUKTER TILL INT 
-                                numberOfProducts = Convert.ToInt32(userInput[1]);
-                                //RÄKNAR UT TOTALSUMMA AV PRODUKTEN
+                        //OM PRODUKT FINNS OCH ANTAL PRODUKTER ÄR GILTIGT
+                        else if (currentProduct != null && TryNumberOfProducts(userInput[1]) == true)
+                            {  
+                            //CalculateWriteInConsoleAndSaveToFile(); // FUNKAR BARA OM GÖR OM TILL PROPERTY?
+                                numberOfProducts = Convert.ToInt32(userInput[1]); //GÖR OM TILL PROPERTIY?
                                 currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(numberOfProducts,
                                     Convert.ToDecimal(currentProduct.ProductPrice));
-                                //LÄGGER TILL TOTALSUMMA AV PRODUKTEN TILL HELA KVITTOSUMMAN
-                                singleReceiptTotalAmount += currentProduct.TotalPrice;
+                                singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
 
-                                //SKRIVER UT PRODUKTENS EGENSKAPER
+                            //WriteProductPropertiesAndAmount(currentProduct, singleReceiptTotalAmount, numberOfProducts);    
                                 Console.Clear();
                                 Console.WriteLine($"{currentProduct.ProductName} {numberOfProducts} * " +
                                     $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
                                 Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
                                
-                           
-                                //totalsumma för singlereceipt = för varje rad i  single.receipt finns ett totalprice. loopa igenom 
-                    
-                                //SPARAR  CURRENTPRODUCT TILL LISTAN allReceipt.ListOfSingleReceipts
                                 allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName, 
                                     currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice, 
                                     numberOfProducts);
-
-                            //---LÄGG TILL BANAN * FLERA ISTÄLLET FÖR PÅ FLER OLIKA RADER
-                            //---MÅSTE SPARAS EN COUNT PÅ KVITTORADEN. OM PRODUKTEN FINNS I LISTAN, ÄNDRA COUNT+1 I KVITTORADEN. 
-                            //---ÄNDRA VALD RAD I FIL i addtolistofsinglereceipt
-                        }
+                            }
                     }
                 }
                 else if (sel == 2)
@@ -157,15 +134,20 @@ namespace KassaSystem
                     Console.WriteLine("Felaktig input");
             }
         }
-        //METHODS
-        private void Commands()
+        private void ShowReceiptHead()
+        {
+            Console.Clear();
+            Console.WriteLine("KASSA");
+            Console.WriteLine($"KVITTO {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+        }
+        private void ShowCommands()
         {
             Console.WriteLine("Kommandon:");
             Console.WriteLine("<productid> <antal>");
             Console.WriteLine("Kommando PAY");
             Console.WriteLine("Kommando:");
         }
-        public int Menu()
+        private int ShowMenu()
         {
             while (true)
             {
@@ -265,3 +247,5 @@ namespace KassaSystem
 //Kampanjpris: man ska kunna säga att from 2022-10-12 till 2022-10-18 så ska banananerna kosta 10kr
 
 //Kampanjpris: man ska kunna säga att from 2022-10-20 till 2022-10-24 så ska banananerna kosta 11kr
+
+//FÖRBÄTTRA FELSÖKNING TRYNUMBEROFPRODUCTS
