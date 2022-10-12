@@ -7,44 +7,65 @@ using System.Threading.Tasks;
 
 namespace KassaSystem
 {
-    public class ReceiptRow
+    public class SingleReceipt
     {
         private string _productID;
         private string _productName;
         private string _productUnit;
         private decimal _price;
-        private int _count;
+        private decimal _totalPrice;
+        private int _count; //   private int _serialNumber;
 
-        public ReceiptRow(string productID, string productName, string productUnit, decimal price, int count)
+        public SingleReceipt(string productID, string productName, string productUnit, decimal price, decimal totalPrice, int count)
         {
             _productID = productID;
             _productName = productName;
             _productUnit = productUnit;
             _price = price;
+            _totalPrice = totalPrice;
             _count = count;
         }
         public string ProductID
         { get { return _productID; } }  
+        public string ProductName
+            { get { return _productName; } }
+        public string ProductUnit
+            { get { return _productUnit; } }
+        public decimal Price
+            { get { return _price; } }
+        public decimal TotalPrice
+        { get { return _totalPrice; } }
+        private int Count
+            { get { return _count; } }
+
     }
-    internal class Receipt
+    public class AllReceipts
     {
-        private List<ReceiptRow> _receiptRows= new List<ReceiptRow>();
-        private int _serialNumber;
-        public void AddToReceipt(string productID, string productName, string productUnit, decimal price, int count)
+        private List<SingleReceipt> _listOfSingleReceipts= new List<SingleReceipt>();
+        
+        public AllReceipts()
         {
-            foreach(ReceiptRow row in _receiptRows)
+
+        }
+
+        public List<SingleReceipt> ListOfSingleReceipts
+        { 
+            get { return _listOfSingleReceipts; } 
+            set { _listOfSingleReceipts = value; }        
+        }
+
+        public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, decimal price, decimal totalPrice, int count)
+        {
+            //FÖR VARJE SINGLERECEIPT I LISTAN
+            foreach(SingleReceipt row in _listOfSingleReceipts)
             {
+                //OM PRODUCTID FINNS I LISTAN, RÄKNA +1
                 if (row.ProductID == productID ) 
                         count++;
+                //ANNARS ADDERA NYA SINGLERECEIPT TILL LISTAN 
                 else
-                    _receiptRows.Add(new ReceiptRow(productID, productName, productUnit, price, count));
+                    _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit, price, totalPrice, count));
             }
         }
-        
-        public Receipt()
-        {
-            
-        }
-        
     }
 }
