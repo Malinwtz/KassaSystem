@@ -16,7 +16,8 @@ namespace KassaSystem
         private decimal _totalPrice;
         private int _count; //   private int _serialNumber;
 
-        public SingleReceipt(string productID, string productName, string productUnit, decimal price, decimal totalPrice, int count)
+        public SingleReceipt(string productID, string productName, string productUnit, decimal price, 
+            decimal totalPrice, int count)
         {
             _productID = productID;
             _productName = productName;
@@ -41,7 +42,7 @@ namespace KassaSystem
     }
     public class AllReceipts
     {
-        private List<SingleReceipt> _listOfSingleReceipts= new List<SingleReceipt>();
+        private List<SingleReceipt> _listOfSingleReceipts = new List<SingleReceipt>();
         
         public AllReceipts()
         {
@@ -54,17 +55,26 @@ namespace KassaSystem
             set { _listOfSingleReceipts = value; }        
         }
 
-        public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, decimal price, decimal totalPrice, int count)
+        public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
+            decimal price, decimal totalPrice, int count)
         {
-            //FÖR VARJE SINGLERECEIPT I LISTAN
-            foreach(SingleReceipt row in _listOfSingleReceipts)
+            if (_listOfSingleReceipts.Count < 1)
             {
-                //OM PRODUCTID FINNS I LISTAN, RÄKNA +1
-                if (row.ProductID == productID ) 
+                _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
+                      price, totalPrice, count));
+            }
+            else 
+            {
+                foreach (var row in _listOfSingleReceipts.ToList())
+                {
+                    //OM PRODUCTID FINNS I LISTAN, RÄKNA +1
+                    if (row.ProductID == productID)
                         count++;
-                //ANNARS ADDERA NYA SINGLERECEIPT TILL LISTAN 
-                else
-                    _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit, price, totalPrice, count));
+                    //ANNARS ADDERA NY SINGLERECEIPT TILL LISTAN 
+                    else
+                        _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
+                            price, totalPrice, count));
+                }
             }
         }
     }
