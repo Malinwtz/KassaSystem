@@ -15,9 +15,10 @@ namespace KassaSystem
     {
         public void Run()
         {   
-            //HÄMTAR PRODUKTER FRÅN TEXTFILEN OCH SPARA I EN LISTA ALLPRODUCTS
             var allProducts = ReadProductsFromFile();  
             decimal singleReceiptTotalAmount = 0;
+            //metod getTotalAmount
+            //looopa igenom alla rows i singlereceiptlista och hämta totalpris av varje vara
             
             while (true)
             {
@@ -29,7 +30,7 @@ namespace KassaSystem
                     AllReceipts allReceipt = new AllReceipts();
                     Console.Clear();
 
-                    var numberOfProducts = 0; //GÖR OM TILL PROPERTY I SINGLERECEIPT?
+                  //  var numberOfProducts = 0; //GÖR OM TILL PROPERTY I SINGLERECEIPT?
 
                     while (true)
                     {   
@@ -50,12 +51,12 @@ namespace KassaSystem
                              
                             foreach (var row in allReceipt.ListOfSingleReceipts)
                             { 
-                                Console.WriteLine($"{row.ProductName} {numberOfProducts} * {row.Price} " +
-                                    $"= {row.Price * numberOfProducts}kr");
+                                //VARFÖR BLIR ROW COUNT 1 FAST JAG SKRIVIT IN TVÅ PRODUKTER?
+                                Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
+                                    $"= {row.Price * row.Count}kr");
                             }
                             Console.WriteLine($"Total: {singleReceiptTotalAmount}" + Environment.NewLine);
                             
-                                //----KVITTOAVSKILJARE MÅSTE FINNAS-------------räcker med mellanrum?
                             var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt"; 
 
                                 //VG: LÄS SPECIFIK RAD I FÖRRA KVITTOT FÖR ATT FÅ NÄSTA NR PÅ KVITTOT---------
@@ -70,7 +71,7 @@ namespace KassaSystem
                             foreach (SingleReceipt row in allReceipt.ListOfSingleReceipts)
                             {   
                                 var line = ""; 
-                                line = $"{row.ProductName} {numberOfProducts} * {row.Price} = {row.Price * numberOfProducts}kr"; 
+                                line = $"{row.ProductName} {row.Count} * {row.Price} = {row.Price * row.Count}kr"; 
                                 File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till data i EN rad sist i fil
                             }
                             break;
@@ -85,23 +86,37 @@ namespace KassaSystem
 
                         //OM PRODUKT FINNS OCH ANTAL PRODUKTER ÄR GILTIGT
                         else if (currentProduct != null && TryNumberOfProducts(userInput[1]) == true)
-                            {  
+                        {  
                             //CalculateWriteInConsoleAndSaveToFile(); // FUNKAR BARA OM GÖR OM TILL PROPERTY?
-                                numberOfProducts = Convert.ToInt32(userInput[1]); //GÖR OM TILL PROPERTIY?
-                                currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(numberOfProducts,
+                                var numberOfProducts = Convert.ToInt32(userInput[1]); //GÖR OM TILL PROPERTIY?
+                                currentProduct.Count = numberOfProducts;
+                                currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
                                     Convert.ToDecimal(currentProduct.ProductPrice));
                                 singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
 
                             //WriteProductPropertiesAndAmount(currentProduct, singleReceiptTotalAmount, numberOfProducts);    
                                 Console.Clear();
-                                Console.WriteLine($"{currentProduct.ProductName} {numberOfProducts} * " +
+                                Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
                                     $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
                                 Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
-                               
+
+                            //---VARFÖR BLIR INTE TOTALSUMMAN RÄTT? VERKAR LÄGGA IHOP ALLA SINGLERECEIPTS.
+                            //---ANTAL COUNT LÄGGS INTE IHOP PÅ RÄTT SÄTT
+    ////forts
+                            foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
+                            {
+                                if (row.ProductID == currentProduct.ProductID) //OM PRODUKTEN REDAN FINNS
+                                {//LÄGG TILL ANTAL PRODUKTER I NUVARANDE PRODUKT.COUNT
+                                    currentProduct.Count = currentProduct.Count + numberOfProducts;
+                                }
+                            }  
                                 allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName, 
                                     currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice, 
-                                    numberOfProducts);
-                            }
+                                    currentProduct.Count);
+
+                            //IF PRODUKTID EXISTS ADD COUNT++;
+
+                        }
                     }
                 }
                 else if (sel == 2)
@@ -191,7 +206,7 @@ namespace KassaSystem
                 //DELA RADEN LINE, LÄGG ALLA DELARNA I EN ARRAY 
                 var parts = line.Split(';');
                  //SKAPA NYTT OBJEKT AV PRODUCTS DÄR STRÄNGARNA BLIR PROPERTIES
-                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0); 
+                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0/*, 0*/); 
                 //ADDERA TILL PRODUKTLISTAN
                 result.Add(product);
             }
@@ -205,6 +220,10 @@ namespace KassaSystem
         }
     }
 }
+
+
+
+
 
 //METODER
 
@@ -220,6 +239,8 @@ namespace KassaSystem
 //        Console.WriteLine("Ogiltig produktkod");
 //    else break;
 //}
+
+
 
 
 //if (numberOfProducts! >= 0)

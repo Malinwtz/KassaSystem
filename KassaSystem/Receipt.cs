@@ -7,39 +7,6 @@ using System.Threading.Tasks;
 
 namespace KassaSystem
 {
-    public class SingleReceipt
-    {
-        private string _productID;
-        private string _productName;
-        private string _productUnit;
-        private decimal _price;
-        private decimal _totalPrice;
-        private int _count; //   private int _serialNumber;
-
-        public SingleReceipt(string productID, string productName, string productUnit, decimal price, 
-            decimal totalPrice, int count)
-        {
-            _productID = productID;
-            _productName = productName;
-            _productUnit = productUnit;
-            _price = price;
-            _totalPrice = totalPrice;
-            _count = count;
-        }
-        public string ProductID
-        { get { return _productID; } }  
-        public string ProductName
-            { get { return _productName; } }
-        public string ProductUnit
-            { get { return _productUnit; } }
-        public decimal Price
-            { get { return _price; } }
-        public decimal TotalPrice
-        { get { return _totalPrice; } }
-        private int Count
-            { get { return _count; } }
-
-    }
     public class AllReceipts
     {
         private List<SingleReceipt> _listOfSingleReceipts = new List<SingleReceipt>();
@@ -54,13 +21,13 @@ namespace KassaSystem
             get { return _listOfSingleReceipts; } 
             set { _listOfSingleReceipts = value; }        
         }
-
+        //metod getTotal returnerar pris * antal
         public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
             decimal price, decimal totalPrice, int count)
         {
             //---LÄGG TILL BANAN * FLERA ISTÄLLET FÖR PÅ FLER OLIKA RADER - SKRIV OM KVITTOT
-            //---MÅSTE SPARAS EN COUNT PÅ KVITTORADEN. OM PRODUKTEN FINNS I LISTAN, ÄNDRA COUNT+1 I KVITTORADEN. 
-            //---ÄNDRA VALD RAD I FILEN
+             
+           //---DET BLIR TVÅ RADER MED PRODUKTER I SINGLERECEIPT
 
             if (_listOfSingleReceipts.Count < 1)
             {
@@ -69,11 +36,13 @@ namespace KassaSystem
             }
             else 
             {
-                foreach (var row in _listOfSingleReceipts.ToList())
+                foreach (var product in _listOfSingleReceipts.ToList())
                 {
-                    //OM PRODUCTID FINNS I LISTAN, RÄKNA +1
-                    if (row.ProductID == productID)
-                        count++;
+                    //OM PRODUCTID FINNS I LISTAN, RÄKNA +1 OCH ÄNDRA I LISTAN
+                    if (product.ProductID == productID)
+                        break;
+                    //    product.Count++; //---ÄNDRA befintlig produkt I LISTAN
+
                     //ANNARS ADDERA NY SINGLERECEIPT TILL LISTAN 
                     else
                         _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,

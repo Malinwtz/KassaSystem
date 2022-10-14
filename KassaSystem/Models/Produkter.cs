@@ -9,49 +9,56 @@ namespace KassaSystem.Models
 {  
     public class Products
     {
-        private string productID;
-        private string productName;
-        private string productUnit;
-        private decimal productPrice;
-        private decimal totalPrice;
+        private string _productID;
+        private string _productName;
+        private string _productUnit;
+        private decimal _productPrice;
+        private decimal _totalPrice;
+        private int _count;
         //CONSTRUCTORS
         public Products() 
         {
 
         }
-        public Products(string productID, string productName, string productUnit, decimal productPrice, decimal totalPrice) 
+        public Products(string productID, string productName, string productUnit, decimal productPrice, decimal totalPrice /*, int count*/) 
         {
-            this.productID = productID;
-            this.productName = productName;
-            this.productUnit = productUnit;
-            this.productPrice = productPrice;
-            this.totalPrice = totalPrice;
+            _productID = productID;
+            _productName = productName;
+            _productUnit = productUnit;
+            _productPrice = productPrice;
+            _totalPrice = totalPrice;
+      //      _count = count; 
         }
         //PROPERTIES
         public string ProductID 
-            { get { return productID; } set { productID = value; } }
+            { get { return _productID; } set { _productID = value; } }
         public string ProductName
         {
-           get { return productName; }
+           get { return _productName; }
             set 
             {
                 if (ProductName.Length < 2 || string.IsNullOrEmpty(ProductName) == true)
                     throw new ArgumentException("Felaktigt inskrivet namn");
 
-                productName = value; 
+                _productName = value; 
             }
         }
         public string ProductUnit 
-            { get { return productUnit; } set { productUnit = value; } }
+            { get { return _productUnit; } set { _productUnit = value; } }
         public decimal ProductPrice
         {
-            get { return productPrice; }
-            set { productPrice = value;}
+            get { return _productPrice; }
+            set { _productPrice = value;}
         }
         public decimal TotalPrice
         {
-            get { return totalPrice; }
-            set { totalPrice = value; } 
+            get { return _totalPrice; }
+            set { _totalPrice = value; } 
+        }
+        public int Count
+        {
+            get { return _count; }
+            set { _count = value; }
         }
 
         //METHODS
