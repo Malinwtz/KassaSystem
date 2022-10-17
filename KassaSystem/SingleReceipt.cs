@@ -13,10 +13,11 @@ namespace KassaSystem
         private string _productUnit;
         private decimal _price;
         private decimal _totalPrice;
-        private int _count; 
+        private int _count;
+        private decimal _totalAmoutAllProducts;
 
         public SingleReceipt(string productID, string productName, string productUnit, decimal price,
-            decimal totalPrice, int count)
+            decimal totalPrice, int count, decimal totalAmoutAllProducts)
         {
             _productID = productID;
             _productName = productName;
@@ -24,6 +25,7 @@ namespace KassaSystem
             _price = price;
             _totalPrice = totalPrice;
             _count = count;
+            _totalAmoutAllProducts = totalAmoutAllProducts; 
         }
         public string ProductID
         { get { return _productID; } }
@@ -39,6 +41,11 @@ namespace KassaSystem
         { 
             get { return _count; }
             set { _count = value; }
+        }
+        public decimal TotalAmoutAllProducts
+        { 
+            get { return _totalAmoutAllProducts; }
+            set { _totalAmoutAllProducts = value; }
         }
 
     }

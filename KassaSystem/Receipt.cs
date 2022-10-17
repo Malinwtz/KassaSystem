@@ -23,7 +23,7 @@ namespace KassaSystem
         }
         //metod getTotal returnerar pris * antal
         public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
-            decimal price, decimal totalPrice, int count)
+            decimal price, decimal totalPrice, int count, decimal allTotal)
         {
             //---LÄGG TILL BANAN * FLERA ISTÄLLET FÖR PÅ FLER OLIKA RADER - SKRIV OM KVITTOT
              
@@ -32,7 +32,7 @@ namespace KassaSystem
             if (_listOfSingleReceipts.Count < 1)
             {
                 _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-                      price, totalPrice, count));
+                      price, totalPrice, count, allTotal));
             }
             else 
             {
@@ -46,7 +46,7 @@ namespace KassaSystem
                     //ANNARS ADDERA NY SINGLERECEIPT TILL LISTAN 
                     else
                         _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-                            price, totalPrice, count));
+                            price, totalPrice, count, allTotal));
                 }
             }
         }

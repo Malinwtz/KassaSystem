@@ -35,12 +35,22 @@ namespace KassaSystem
                     while (true)
                     {   
                         ShowCommands();
-                        //GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
-                        string input = Console.ReadLine().Trim();
-                        var userInput = input.Split(' ');
-                        //LETAR OCH HÄMTAR PRODUKTKOD I LISTAN ALLAPRODUKTER
-                        var currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
-                       
+                        string input = "";
+                        var currentProduct = new Products();
+                        var numberOfProducts = 0;
+                        try
+                        {//GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
+                            input = Console.ReadLine().Trim();
+                            var userInput = input.Split(' ');
+                            //LETAR OCH HÄMTAR PRODUKTKOD I LISTAN ALLAPRODUKTER
+                            currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
+                            numberOfProducts = Convert.ToInt32(userInput[1]);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+
                         if (input.ToUpper() == "PAY")
                         {
                             //VG:kvitto ska ha löpnr. Kanske counter i ++; vid varje pay och lägg till som
@@ -78,43 +88,72 @@ namespace KassaSystem
                         }
 
                         //OM PRODUKT EJ FINNS ELLER OM ANTAL INSKRIVNA PRODUKTER OGILTIGT
-                        if (currentProduct == null || TryNumberOfProducts(userInput[1]) == false) //produktkod hittas inte || ogiltigt antal produkter
+                        if (currentProduct == null ) //produktkod hittas inte (|| ogiltigt antal produkter)
                             {
                                 Console.WriteLine("Felaktig input");
                                 continue;
                             }
 
                         //OM PRODUKT FINNS OCH ANTAL PRODUKTER ÄR GILTIGT
-                        else if (currentProduct != null && TryNumberOfProducts(userInput[1]) == true)
-                        {  
-                            //CalculateWriteInConsoleAndSaveToFile(); // FUNKAR BARA OM GÖR OM TILL PROPERTY?
-                                var numberOfProducts = Convert.ToInt32(userInput[1]); //GÖR OM TILL PROPERTIY?
-                                currentProduct.Count = numberOfProducts;
-                                currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
+                        else if (currentProduct != null && numberOfProducts >= 0)
+                        {
+
+                            foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
+                            {
+                                if (row.ProductID == currentProduct.ProductID) 
+                                {
+                                    currentProduct.Count += numberOfProducts;
+                                    singleReceiptTotalAmount += row.TotalAmoutAllProducts;
+
+                                    currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
                                     Convert.ToDecimal(currentProduct.ProductPrice));
+                                    singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
+
+                                    allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
+                                        currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
+                                        currentProduct.Count, singleReceiptTotalAmount);
+
+                                    Console.Clear();
+                                    Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
+                                        $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
+                                    Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
+                                    break;
+                                }
+                                else
+                                {
+                                    currentProduct.Count = numberOfProducts;
+
+                                    currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
+                                    Convert.ToDecimal(currentProduct.ProductPrice));
+
+                                    singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
+
+                                    allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
+                                            currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
+                                            currentProduct.Count, singleReceiptTotalAmount);
+
+                                    Console.Clear();
+                                    Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
+                                        $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
+                                    Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
+                                    break;
+                                }
+                            }
+                           
+                            currentProduct.Count = numberOfProducts;
+
+                                currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
+                                Convert.ToDecimal(currentProduct.ProductPrice));
                                 singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
 
-                            //WriteProductPropertiesAndAmount(currentProduct, singleReceiptTotalAmount, numberOfProducts);    
-                                Console.Clear();
+                            allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
+                                    currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
+                                    currentProduct.Count, singleReceiptTotalAmount);
+                            
+                            Console.Clear();
                                 Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
                                     $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
                                 Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
-
-                            //---VARFÖR BLIR INTE TOTALSUMMAN RÄTT? VERKAR LÄGGA IHOP ALLA SINGLERECEIPTS.
-                            //---ANTAL COUNT LÄGGS INTE IHOP PÅ RÄTT SÄTT
-    ////forts
-                            foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
-                            {
-                                if (row.ProductID == currentProduct.ProductID) //OM PRODUKTEN REDAN FINNS
-                                {//LÄGG TILL ANTAL PRODUKTER I NUVARANDE PRODUKT.COUNT
-                                    currentProduct.Count = currentProduct.Count + numberOfProducts;
-                                }
-                            }  
-                                allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName, 
-                                    currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice, 
-                                    currentProduct.Count);
-
-                            //IF PRODUKTID EXISTS ADD COUNT++;
 
                         }
                     }
@@ -175,26 +214,7 @@ namespace KassaSystem
                 Console.WriteLine("Felaktig input");   
             }
         }
-        private bool TryNumberOfProducts(string userInput)
-        {
-            int numberOfProducts = 0;
-            while (true)
-            {
-                try
-                {
-                    numberOfProducts = Convert.ToInt32(userInput);
-                  //  Int32.TryParse(userInput, out int numberOfProducts);
-                    return true;
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    userInput = Console.ReadLine();
-                }
-                return false;
-            }   
-        } 
+       
         private List<Products> ReadProductsFromFile()
         {
             //SKAPA NYTT OBJEKT AV TYPEN PRODUCT
