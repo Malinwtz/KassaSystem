@@ -16,7 +16,7 @@ namespace KassaSystem
         public void Run()
         {   
             var allProducts = ReadProductsFromFile();  
-            decimal singleReceiptTotalAmount = 0;
+            //decimal singleReceiptTotalAmount = 0;
             //metod getTotalAmount
             //looopa igenom alla rows i singlereceiptlista och hämta totalpris av varje vara
             
@@ -37,53 +37,41 @@ namespace KassaSystem
                         ShowCommands();
                         string input = "";
                         var currentProduct = new Products();
-                        var numberOfProducts = 0;
-                        try
-                        {//GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
+                        //GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
                             input = Console.ReadLine().Trim();
                             var userInput = input.Split(' ');
                             //LETAR OCH HÄMTAR PRODUKTKOD I LISTAN ALLAPRODUKTER
                             currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
-                            numberOfProducts = Convert.ToInt32(userInput[1]);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-
+                           
                         if (input.ToUpper() == "PAY")
                         {
+                            //"utan hål i kvitto" med löpande nr. lagra undan kvittonr
+                            //fil med lastreceipt.txt med bara senaste kvittonr. läs nr och plussa varje gång ny vara
                             //VG:kvitto ska ha löpnr. Kanske counter i ++; vid varje pay och lägg till som
                             //variabel när kvittot skickas till filen
                             //FUNKTION SOM LÄSER SENASTE RAD I FILEN? KAN ISF SKRIVA LÖPNR SIST PÅ KVITTOT
                             //OCH LÄSA INNAN BÖRJAN AV NYTT KVITTO
                             ShowReceiptHead();
-                             
-                            foreach (var row in allReceipt.ListOfSingleReceipts)
-                            { 
-                                //VARFÖR BLIR ROW COUNT 1 FAST JAG SKRIVIT IN TVÅ PRODUKTER?
-                                Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
-                                    $"= {row.Price * row.Count}kr");
-                            }
-                            Console.WriteLine($"Total: {singleReceiptTotalAmount}" + Environment.NewLine);
+                            allReceipt.ShowListOfProducts();
+                            Console.WriteLine($"Total: {allReceipt.CalculateTotal()}" + Environment.NewLine);
                             
                             var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt"; 
 
-                                //VG: LÄS SPECIFIK RAD I FÖRRA KVITTOT FÖR ATT FÅ NÄSTA NR PÅ KVITTOT---------
-                                var i = 0;
-                                i++;
+                            //---VG: LÄS SPECIFIK RAD I FÖRRA KVITTOT FÖR ATT FÅ NÄSTA NR PÅ KVITTOT---------
+                            var i = 0;
+                            i++;
                             var numberLine = $"KVITTO NR {i}";
                             File.AppendAllText(fileName, Environment.NewLine); //SPARAR TOM RAD I KVITTO
                             File.AppendAllText(fileName, numberLine + Environment.NewLine); //SPARAR KVITTONR
                                 //-----FÖR ATT FÅ NÄSTA NR I ORDNINGEN KAN SENASTE NR LÄSAS FRÅN KVITTOFIL?-----
 
-                                //FÖR VARJE RAD I LISTAN RECEIPTROWS
-                            foreach (SingleReceipt row in allReceipt.ListOfSingleReceipts)
+                            foreach (var row in allReceipt.ListOfSingleReceipts)
                             {   
-                                var line = ""; 
-                                line = $"{row.ProductName} {row.Count} * {row.Price} = {row.Price * row.Count}kr"; 
+                                var line = $"{row.ProductName} {row.Count} * {row.Price} = {row.Price * row.Count}kr"; 
                                 File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till data i EN rad sist i fil
                             }
+                            var total = $"Total: {Convert.ToString(allReceipt.CalculateTotal())}kr";
+                            File.AppendAllText(fileName, total + Environment.NewLine);
                             break;
                         }
 
@@ -95,66 +83,41 @@ namespace KassaSystem
                             }
 
                         //OM PRODUKT FINNS OCH ANTAL PRODUKTER ÄR GILTIGT
-                        else if (currentProduct != null && numberOfProducts >= 0)
-                        {
-
-                            foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
+                        else if (currentProduct != null && Convert.ToInt32(userInput[1]) > 0)
+                        {//---VARFÖR SPARAS SISTA PRODUKTEN FLER GGR I LISTAN?
+                            var numberOfProducts = Convert.ToInt32(userInput[1]);
+                            if (allReceipt.IsListContaining(currentProduct) == true)
                             {
-                                if (row.ProductID == currentProduct.ProductID) 
+                                foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
                                 {
-                                    currentProduct.Count += numberOfProducts;
-                                    singleReceiptTotalAmount += row.TotalAmoutAllProducts;
+                                    if (row.ProductID == currentProduct.ProductID)
+                                    {
+                                        row.Count += numberOfProducts;
+                                        row.TotalPrice = CalculateTotalPriceSingleProduct(row.Count,
+                                        Convert.ToDecimal(row.Price));
 
-                                    currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
-                                    Convert.ToDecimal(currentProduct.ProductPrice));
-                                    singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
-
-                                    allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
-                                        currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
-                                        currentProduct.Count, singleReceiptTotalAmount);
-
-                                    Console.Clear();
-                                    Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
-                                        $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
-                                    Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
-                                    break;
-                                }
-                                else
-                                {
-                                    currentProduct.Count = numberOfProducts;
-
-                                    currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
-                                    Convert.ToDecimal(currentProduct.ProductPrice));
-
-                                    singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
-
-                                    allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
-                                            currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
-                                            currentProduct.Count, singleReceiptTotalAmount);
-
-                                    Console.Clear();
-                                    Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
-                                        $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
-                                    Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
-                                    break;
+                                        Console.Clear();
+                                        Console.WriteLine($"{row.ProductName} {row.Count} * " +
+                                            $"{row.Price} = {row.TotalPrice}");
+                                        Console.WriteLine($"Total: {allReceipt.CalculateTotal()}kr" + Environment.NewLine);
+                                    }
                                 }
                             }
-                           
-                            currentProduct.Count = numberOfProducts;
-
+                            else if (!allReceipt.IsListContaining(currentProduct))
+                            {
+                                currentProduct.Count = numberOfProducts;
                                 currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
-                                Convert.ToDecimal(currentProduct.ProductPrice));
-                                singleReceiptTotalAmount += currentProduct.TotalPrice; //GÖR OM TILL PROPERTY?
+                                    Convert.ToDecimal(currentProduct.ProductPrice));
 
-                            allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
-                                    currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
-                                    currentProduct.Count, singleReceiptTotalAmount);
-                            
-                            Console.Clear();
+                                allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
+                                        currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
+                                        currentProduct.Count);
+
+                                Console.Clear();
                                 Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
-                                    $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
-                                Console.WriteLine($"Total: {singleReceiptTotalAmount}kr" + Environment.NewLine);
-
+                                        $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
+                                Console.WriteLine($"Total: {allReceipt.CalculateTotal()}kr" + Environment.NewLine);
+                            }
                         }
                     }
                 }

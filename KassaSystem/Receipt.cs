@@ -1,6 +1,7 @@
 ﻿using KassaSystem.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace KassaSystem
         }
         //metod getTotal returnerar pris * antal
         public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
-            decimal price, decimal totalPrice, int count, decimal allTotal)
+            decimal price, decimal totalPrice, int count)
         {
             //---LÄGG TILL BANAN * FLERA ISTÄLLET FÖR PÅ FLER OLIKA RADER - SKRIV OM KVITTOT
              
@@ -32,7 +33,7 @@ namespace KassaSystem
             if (_listOfSingleReceipts.Count < 1)
             {
                 _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-                      price, totalPrice, count, allTotal));
+                      price, totalPrice, count));
             }
             else 
             {
@@ -46,8 +47,37 @@ namespace KassaSystem
                     //ANNARS ADDERA NY SINGLERECEIPT TILL LISTAN 
                     else
                         _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-                            price, totalPrice, count, allTotal));
+                            price, totalPrice, count));
                 }
+            }
+        }
+
+        public decimal CalculateTotal()
+        {   
+            decimal total = 0;
+            foreach (var row in _listOfSingleReceipts)
+            {
+                total += row.TotalPrice;   
+            }
+            return total;
+        }
+        public bool IsListContaining(Products product)
+        {
+            foreach (var row in _listOfSingleReceipts.ToList())
+            {
+                if (row.ProductID == product.ProductID)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void ShowListOfProducts()
+        {
+            foreach (var row in _listOfSingleReceipts)
+            {
+                Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
+                    $"= {row.Price * row.Count}kr");
             }
         }
     }
