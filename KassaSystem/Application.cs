@@ -36,11 +36,11 @@ namespace KassaSystem
                         ShowCommands();
                         
                         var currentProduct = new Products();
-
-                        string input = "";
+                        var input = "";
+                        
                         input = Console.ReadLine().Trim();
                         var userInput = input.Split(' ');
-                           
+                       
                         currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
                            
                         if (input.ToUpper() == "PAY")
@@ -76,13 +76,14 @@ namespace KassaSystem
                         }
 
                         //OM PRODUKT EJ FINNS ELLER OM ANTAL INSKRIVNA PRODUKTER OGILTIGT
-                        if (currentProduct == null || userInput[1] == null) //produktkod hittas inte (|| ogiltigt antal produkter)
+                        if (userInput.Length != 2 || currentProduct == null || userInput[1] == null 
+                            || TryUserInputNumbers(userInput[1]) == false) 
                         {
                             Console.WriteLine("Felaktig input");
                                 continue;
                         }
 
-                        else if (currentProduct != null && Convert.ToInt32(userInput[1]) > 0)
+                        else if (currentProduct != null && TryUserInputNumbers(userInput[1]) == true)
                         {
                             var numberOfProducts = Convert.ToInt32(userInput[1]);
                             if (allReceipt.IsListContaining(currentProduct) == true)
@@ -187,7 +188,14 @@ namespace KassaSystem
                 Console.WriteLine("Felaktig input");
             }
         }
-       
+        public bool TryUserInputNumbers(string uInput)
+        {
+            if (uInput == null || Convert.ToInt32(uInput) < 0)
+            {
+                return false;
+            }
+            else return true;
+        }
         private List<Products> ReadProductsFromFile()
         {
             //SKAPA NYTT OBJEKT AV TYPEN PRODUCT
