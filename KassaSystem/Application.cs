@@ -1,5 +1,6 @@
 ﻿using KassaSystem.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -34,14 +35,9 @@ namespace KassaSystem
                     while (true)
                     {   
                         ShowCommands();
-                        
-                        var currentProduct = new Products();
-                        var input = "";
-                        
-                        input = Console.ReadLine().Trim();
+                        var input = Console.ReadLine().Trim();
                         var userInput = input.Split(' ');
-                       
-                        currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
+                        var currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
                            
                         if (input.ToUpper() == "PAY")
                         {
@@ -75,7 +71,6 @@ namespace KassaSystem
                             break;
                         }
 
-                        //OM PRODUKT EJ FINNS ELLER OM ANTAL INSKRIVNA PRODUKTER OGILTIGT
                         if (userInput.Length != 2 || currentProduct == null || userInput[1] == null 
                             || TryUserInputNumbers(userInput[1]) == false) 
                         {
@@ -104,23 +99,24 @@ namespace KassaSystem
                 }
                 else if (sel == 2)
                 {
-
+                    Admin admin = new Admin();  
                     Console.Clear();
-                    var selected = Admin.AdminMenu();
-
-                    //1.NewProduct
-                        //lägg till objekt till fil: File.AppendAllText(fileName, line + Environment.NewLine); 
-                    //2.DeleteProduct
-                        //ta bort objekt från fil
-                    //3.ChangeProduct
-                        //ta ut eller radera från fil
-                        //ändra objekt
-                            //ändra namn 
-                            //ändra pris
-                            //kampanjpris mellan datetime-datetime
-                        //ersätt objekt i fil 
-
-                    //0.AVSLUTA
+                    var sel2 = Admin.AdminMenu();
+                    if (sel2 == 1)
+                    {
+                        admin.CreateNewProduct();
+                    }
+                    else if (sel2 == 2)
+                    {
+                        admin.ChangeProduct();
+                    }
+                    else if (sel2 == 3)
+                    {
+                        //kampanjpris mellan datetime-datetime
+                      //  CheckIfPromotionalPrice(DateTime start, DateTime end, int price);
+                    }
+                    else if (sel2 == 0) 
+                        break;
                 }
                 else if (sel == 0)
                 {
@@ -196,22 +192,16 @@ namespace KassaSystem
             }
             else return true;
         }
-        private List<Products> ReadProductsFromFile()
+        public List<Products> ReadProductsFromFile()
         {
-            //SKAPA NYTT OBJEKT AV TYPEN PRODUCT
             var result = new List<Products>();
-            //FÖR VARJE RAD I TEXTFILEN 
-           foreach(var line in File.ReadLines("Products.txt")) 
-                 //ReadAllLines läser ALLA rader och tar upp ram-minne //ReadLines läser EN rad i taget. använd därför denna när läsa filer
-            {
-                //DELA RADEN LINE, LÄGG ALLA DELARNA I EN ARRAY 
+       
+            foreach(var line in File.ReadLines("Products.txt")) 
+            {   
                 var parts = line.Split(';');
-                 //SKAPA NYTT OBJEKT AV PRODUCTS DÄR STRÄNGARNA BLIR PROPERTIES
-                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0/*, 0*/); 
-                //ADDERA TILL PRODUKTLISTAN
+                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0); 
                 result.Add(product);
             }
-            //RETURNERA LISTAN
             return result;
         }
         private decimal CalculateTotalPriceSingleProduct(int numberOfProducts, decimal price)
@@ -224,11 +214,24 @@ namespace KassaSystem
 
 
 
+//Adminverktyg(VG)
+
+//(OBS!!! Ändrar man produktens pris kan man ju inte ändra pris på befintliga kvitton osv)
+
+//-kvitton ska ha ett löpnummer! Utan ”hål” i.
+
+//Kampanjpris: man ska kunna säga att from 2022-10-12 till 2022-10-18 så ska banananerna kosta 10kr
+
+//Kampanjpris: man ska kunna säga att from 2022-10-20 till 2022-10-24 så ska banananerna kosta 11kr
+
+// FELSÖKNING 
+
+
 
 
 //METODER
 
-//adm i en ny mapp
+
 
 //Products prod2; // gör metoder av dessa
 //while (true)
@@ -257,17 +260,3 @@ namespace KassaSystem
 //    break;
 //}
 
-
-//Adminverktyg(VG).Där ska man kunna
-
-//- Ändra namn, pris för produkter
-
-//(OBS!!! Ändrar man produktens pris kan man ju inte ändra pris på befintliga kvitton osv)
-
-//-kvitton ska ha ett löpnummer! Utan ”hål” i.
-
-//Kampanjpris: man ska kunna säga att from 2022-10-12 till 2022-10-18 så ska banananerna kosta 10kr
-
-//Kampanjpris: man ska kunna säga att from 2022-10-20 till 2022-10-24 så ska banananerna kosta 11kr
-
-//FÖRBÄTTRA FELSÖKNING TRYNUMBEROFPRODUCTS
