@@ -22,7 +22,8 @@ namespace KassaSystem
             
             while (true)
             {
-                var sel =  ShowMenu(); 
+                ShowMenu();
+                var sel = ReturnFromMenu(); 
 
                 if (sel == 1)
                 {
@@ -30,18 +31,17 @@ namespace KassaSystem
                     AllReceipts allReceipt = new AllReceipts();
                     Console.Clear();
 
-                  //  var numberOfProducts = 0; //GÖR OM TILL PROPERTY I SINGLERECEIPT?
-
                     while (true)
                     {   
                         ShowCommands();
-                        string input = "";
+                        
                         var currentProduct = new Products();
-                        //GÖR OM INPUT TILL PRODUKTKOD OCH ANTAL
-                            input = Console.ReadLine().Trim();
-                            var userInput = input.Split(' ');
-                            //LETAR OCH HÄMTAR PRODUKTKOD I LISTAN ALLAPRODUKTER
-                            currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
+
+                        string input = "";
+                        input = Console.ReadLine().Trim();
+                        var userInput = input.Split(' ');
+                           
+                        currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
                            
                         if (input.ToUpper() == "PAY")
                         {
@@ -53,7 +53,7 @@ namespace KassaSystem
                             //OCH LÄSA INNAN BÖRJAN AV NYTT KVITTO
                             ShowReceiptHead();
                             allReceipt.ShowListOfProducts();
-                            Console.WriteLine($"Total: {allReceipt.CalculateTotal()}" + Environment.NewLine);
+                            allReceipt.WriteTotalAmount();
                             
                             var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt"; 
 
@@ -76,47 +76,27 @@ namespace KassaSystem
                         }
 
                         //OM PRODUKT EJ FINNS ELLER OM ANTAL INSKRIVNA PRODUKTER OGILTIGT
-                        if (currentProduct == null ) //produktkod hittas inte (|| ogiltigt antal produkter)
-                            {
-                                Console.WriteLine("Felaktig input");
+                        if (currentProduct == null || userInput[1] == null) //produktkod hittas inte (|| ogiltigt antal produkter)
+                        {
+                            Console.WriteLine("Felaktig input");
                                 continue;
-                            }
+                        }
 
-                        //OM PRODUKT FINNS OCH ANTAL PRODUKTER ÄR GILTIGT
                         else if (currentProduct != null && Convert.ToInt32(userInput[1]) > 0)
-                        {//---VARFÖR SPARAS SISTA PRODUKTEN FLER GGR I LISTAN?
+                        {
                             var numberOfProducts = Convert.ToInt32(userInput[1]);
                             if (allReceipt.IsListContaining(currentProduct) == true)
                             {
-                                foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
-                                {
-                                    if (row.ProductID == currentProduct.ProductID)
-                                    {
-                                        row.Count += numberOfProducts;
-                                        row.TotalPrice = CalculateTotalPriceSingleProduct(row.Count,
-                                        Convert.ToDecimal(row.Price));
-
-                                        Console.Clear();
-                                        Console.WriteLine($"{row.ProductName} {row.Count} * " +
-                                            $"{row.Price} = {row.TotalPrice}");
-                                        Console.WriteLine($"Total: {allReceipt.CalculateTotal()}kr" + Environment.NewLine);
-                                    }
-                                }
+                                SaveProductIfAlreadyInList(allReceipt, currentProduct, numberOfProducts);
+                                allReceipt.WriteTotalAmount();
                             }
                             else if (!allReceipt.IsListContaining(currentProduct))
                             {
-                                currentProduct.Count = numberOfProducts;
-                                currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
-                                    Convert.ToDecimal(currentProduct.ProductPrice));
-
-                                allReceipt.AddToListOfSingleReceipts(currentProduct.ProductID, currentProduct.ProductName,
-                                        currentProduct.ProductUnit, currentProduct.ProductPrice, currentProduct.TotalPrice,
-                                        currentProduct.Count);
-
+                                SaveNewProductToLIst(currentProduct, allReceipt, numberOfProducts);
                                 Console.Clear();
                                 Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
                                         $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
-                                Console.WriteLine($"Total: {allReceipt.CalculateTotal()}kr" + Environment.NewLine);
+                                allReceipt.WriteTotalAmount();
                             }
                         }
                     }
@@ -151,6 +131,29 @@ namespace KassaSystem
                     Console.WriteLine("Felaktig input");
             }
         }
+
+        private void SaveProductIfAlreadyInList(AllReceipts allReceipt, Products currentProduct, int numberOfProducts)
+        {
+            foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
+            {
+                if (row.ProductID == currentProduct.ProductID)
+                {
+                    row.Count += numberOfProducts;
+                    row.TotalPrice = CalculateTotalPriceSingleProduct(row.Count, Convert.ToDecimal(row.Price));
+
+                    Console.Clear();
+                    Console.WriteLine($"{row.ProductName} {row.Count} * " + $"{row.Price} = {row.TotalPrice}");
+                }
+            }
+        }
+        private void SaveNewProductToLIst(Products currentProduct, AllReceipts allReceipt, int numberOfProducts)
+        {
+            currentProduct.Count = numberOfProducts;
+            currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
+                Convert.ToDecimal(currentProduct.ProductPrice));
+
+            allReceipt.AddToListOfSingleReceipts(currentProduct);
+        }
         private void ShowReceiptHead()
         {
             Console.Clear();
@@ -164,17 +167,24 @@ namespace KassaSystem
             Console.WriteLine("Kommando PAY");
             Console.WriteLine("Kommando:");
         }
-        private int ShowMenu()
+        private void ShowMenu()
         {
+            Console.WriteLine($"KASSA" + Environment.NewLine);
+            Console.WriteLine("1.Ny kund");
+            Console.WriteLine("2.Administreringsverktyg");
+            Console.WriteLine("0.Avsluta");
+        }
+        public int ReturnFromMenu()
+        {
+            var sel = -1;
             while (true)
-            {
-                Console.WriteLine($"KASSA" + Environment.NewLine);
-                Console.WriteLine("1.Ny kund");
-                Console.WriteLine("2.Administreringsverktyg");
-                Console.WriteLine("0.Avsluta");
-                var sel = Convert.ToInt32(Console.ReadLine());
-                if (sel >= 0 && sel < 3) return sel;    
-                Console.WriteLine("Felaktig input");   
+            {  
+                try { sel = Convert.ToInt32(Console.ReadLine()); }
+                catch (Exception x) { /* Console.WriteLine(x.Message);*/}
+                    
+                if (sel >= 0 && sel <= 3) return sel;
+
+                Console.WriteLine("Felaktig input");
             }
         }
        

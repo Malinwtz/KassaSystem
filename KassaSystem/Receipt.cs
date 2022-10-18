@@ -22,36 +22,17 @@ namespace KassaSystem
             get { return _listOfSingleReceipts; } 
             set { _listOfSingleReceipts = value; }        
         }
-        //metod getTotal returnerar pris * antal
-        public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
-            decimal price, decimal totalPrice, int count)
-        {
-            //---LÄGG TILL BANAN * FLERA ISTÄLLET FÖR PÅ FLER OLIKA RADER - SKRIV OM KVITTOT
-             
-           //---DET BLIR TVÅ RADER MED PRODUKTER I SINGLERECEIPT
-
-            if (_listOfSingleReceipts.Count < 1)
-            {
-                _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-                      price, totalPrice, count));
-            }
-            else 
-            {
-                foreach (var product in _listOfSingleReceipts.ToList())
-                {
-                    //OM PRODUCTID FINNS I LISTAN, RÄKNA +1 OCH ÄNDRA I LISTAN
-                    if (product.ProductID == productID)
-                        break;
-                    //    product.Count++; //---ÄNDRA befintlig produkt I LISTAN
-
-                    //ANNARS ADDERA NY SINGLERECEIPT TILL LISTAN 
-                    else
-                        _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-                            price, totalPrice, count));
-                }
-            }
+        //public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
+        //    decimal price, decimal totalPrice, int count)
+        //{   
+        //        _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
+        //              price, totalPrice, count));
+        //}
+        public void AddToListOfSingleReceipts(Products product)
+        {   
+            _listOfSingleReceipts.Add(new SingleReceipt(product.ProductID, product.ProductName, 
+                product.ProductUnit, product.ProductPrice, product.TotalPrice, product.Count));
         }
-
         public decimal CalculateTotal()
         {   
             decimal total = 0;
@@ -60,6 +41,10 @@ namespace KassaSystem
                 total += row.TotalPrice;   
             }
             return total;
+        }
+        public void WriteTotalAmount()
+        {
+            Console.WriteLine($"Total: {CalculateTotal()}kr" + Environment.NewLine);
         }
         public bool IsListContaining(Products product)
         {
