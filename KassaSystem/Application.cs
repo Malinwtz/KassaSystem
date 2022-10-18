@@ -17,10 +17,7 @@ namespace KassaSystem
         public void Run()
         {   
             var allProducts = ReadProductsFromFile();  
-            //decimal singleReceiptTotalAmount = 0;
-            //metod getTotalAmount
-            //looopa igenom alla rows i singlereceiptlista och hämta totalpris av varje vara
-            
+
             while (true)
             {
                 ShowMenu();
@@ -41,8 +38,9 @@ namespace KassaSystem
                            
                         if (input.ToUpper() == "PAY")
                         {
-                            //"utan hål i kvitto" med löpande nr. lagra undan kvittonr
-                            //fil med lastreceipt.txt med bara senaste kvittonr. läs nr och plussa varje gång ny vara
+                            //----"utan hål i kvitto" med löpande nr. lagra undan kvittonr
+                          //-------->  //fil med lastreceipt.txt med bara senaste kvittonr.
+                          //---läs nr och plussa varje gång ny vara
                             //VG:kvitto ska ha löpnr. Kanske counter i ++; vid varje pay och lägg till som
                             //variabel när kvittot skickas till filen
                             //FUNKTION SOM LÄSER SENASTE RAD I FILEN? KAN ISF SKRIVA LÖPNR SIST PÅ KVITTOT
@@ -51,16 +49,13 @@ namespace KassaSystem
                             allReceipt.ShowListOfProducts();
                             allReceipt.WriteTotalAmount();
                             
-                            var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt"; 
+                            var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt";
 
-                            //---VG: LÄS SPECIFIK RAD I FÖRRA KVITTOT FÖR ATT FÅ NÄSTA NR PÅ KVITTOT---------
-                            var i = 0;
-                            i++;
-                            var numberLine = $"KVITTO NR {i}";
+                            var lastNumber = ReadLastLineOfFileToGetNumberOfReceipt();
+                            
+                            var numberLine = $"KVITTO NR {lastNumber}";
                             File.AppendAllText(fileName, Environment.NewLine); //SPARAR TOM RAD I KVITTO
-                            File.AppendAllText(fileName, numberLine + Environment.NewLine); //SPARAR KVITTONR
-                                //-----FÖR ATT FÅ NÄSTA NR I ORDNINGEN KAN SENASTE NR LÄSAS FRÅN KVITTOFIL?-----
-
+                                
                             foreach (var row in allReceipt.ListOfSingleReceipts)
                             {   
                                 var line = $"{row.ProductName} {row.Count} * {row.Price} = {row.Price * row.Count}kr"; 
@@ -68,6 +63,7 @@ namespace KassaSystem
                             }
                             var total = $"Total: {Convert.ToString(allReceipt.CalculateTotal())}kr";
                             File.AppendAllText(fileName, total + Environment.NewLine);
+                            File.AppendAllText(fileName, numberLine + Environment.NewLine); //SPARAR KVITTONR
                             break;
                         }
 
@@ -127,6 +123,24 @@ namespace KassaSystem
                 else
                     Console.WriteLine("Felaktig input");
             }
+        }
+
+        private int ReadLastLineOfFileToGetNumberOfReceipt()
+        {
+            var fileName = DateTime.Now.ToString("RECEIPT_yyyy-MM-dd") + ".txt";
+            if (File.Exists(fileName))
+            {
+                var lastLine = File.ReadLines(fileName).Last();
+                Console.WriteLine(lastLine);
+                lastLine.Split(' ');
+                Console.WriteLine(lastLine[0]);
+                Console.WriteLine(lastLine[1]);
+                Console.WriteLine(lastLine[2]);
+                var number = Convert.ToInt32(lastLine[2]);
+                number++;
+                return number;
+            }
+            else return 1;
         }
 
         private void SaveProductIfAlreadyInList(AllReceipts allReceipt, Products currentProduct, int numberOfProducts)
