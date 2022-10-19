@@ -16,10 +16,15 @@ namespace KassaSystem
     {
         public void Run()
         {   
-            var allProducts = ReadProductsFromFile();  
+            var allProducts = ReadProductsFromFile();
 
             while (true)
             {
+               
+
+                //Console.WriteLine($"{DateTime.Now.DayOfWeek}== {DayOfWeek.Thursday}&& {DateTime.Now.Hour < 13}"); 
+                //Console.WriteLine($"{DateTime.Now.AddDays(3)}");
+
                 ShowMenu();
                 var sel = ReturnFromMenu(); 
 
