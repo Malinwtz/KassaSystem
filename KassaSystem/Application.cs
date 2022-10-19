@@ -37,33 +37,11 @@ namespace KassaSystem
                         var currentProduct = product1.FindProductFromProductID(allProducts, userInput[0]);
                            
                         if (input.ToUpper() == "PAY")
-                        {
-                            //----"utan hål i kvitto" med löpande nr. lagra undan kvittonr
-                          //-------->  //fil med lastreceipt.txt med bara senaste kvittonr.
-                          //---läs nr och plussa varje gång ny vara
-                            //VG:kvitto ska ha löpnr. Kanske counter i ++; vid varje pay och lägg till som
-                            //variabel när kvittot skickas till filen
-                            //FUNKTION SOM LÄSER SENASTE RAD I FILEN? KAN ISF SKRIVA LÖPNR SIST PÅ KVITTOT
-                            //OCH LÄSA INNAN BÖRJAN AV NYTT KVITTO
+                        {  
                             ShowReceiptHead();
                             allReceipt.ShowListOfProducts();
                             allReceipt.WriteTotalAmount();
-                            
-                            var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt";
-
-                            var lastNumber = ReadLastLineOfFileToGetNumberOfReceipt();
-                            
-                            var numberLine = $"KVITTO NR {lastNumber}";
-                            File.AppendAllText(fileName, Environment.NewLine); //SPARAR TOM RAD I KVITTO
-                                
-                            foreach (var row in allReceipt.ListOfSingleReceipts)
-                            {   
-                                var line = $"{row.ProductName} {row.Count} * {row.Price} = {row.Price * row.Count}kr"; 
-                                File.AppendAllText(fileName, line + Environment.NewLine);     //lägger till data i EN rad sist i fil
-                            }
-                            var total = $"Total: {Convert.ToString(allReceipt.CalculateTotal())}kr";
-                            File.AppendAllText(fileName, total + Environment.NewLine);
-                            File.AppendAllText(fileName, numberLine + Environment.NewLine); //SPARAR KVITTONR
+                            allReceipt.SaveToReceipt();
                             break;
                         }
 
@@ -125,23 +103,7 @@ namespace KassaSystem
             }
         }
 
-        private int ReadLastLineOfFileToGetNumberOfReceipt()
-        {
-            var fileName = DateTime.Now.ToString("RECEIPT_yyyy-MM-dd") + ".txt";
-            if (File.Exists(fileName))
-            {
-                var lastLine = File.ReadLines(fileName).Last();
-                Console.WriteLine(lastLine);
-                lastLine.Split(' ');
-                Console.WriteLine(lastLine[0]);
-                Console.WriteLine(lastLine[1]);
-                Console.WriteLine(lastLine[2]);
-                var number = Convert.ToInt32(lastLine[2]);
-                number++;
-                return number;
-            }
-            else return 1;
-        }
+      
 
         private void SaveProductIfAlreadyInList(AllReceipts allReceipt, Products currentProduct, int numberOfProducts)
         {
@@ -230,9 +192,7 @@ namespace KassaSystem
 
 //Adminverktyg(VG)
 
-//(OBS!!! Ändrar man produktens pris kan man ju inte ändra pris på befintliga kvitton osv)
 
-//-kvitton ska ha ett löpnummer! Utan ”hål” i.
 
 //Kampanjpris: man ska kunna säga att from 2022-10-12 till 2022-10-18 så ska banananerna kosta 10kr
 

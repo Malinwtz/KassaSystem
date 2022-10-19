@@ -154,7 +154,7 @@ namespace KassaSystem
             }
 
             //WriteAllText skriver bara ut sista raden i listan till filen
-            //AppendAllText lägger till listan en gång till utan att ta bort den tidigare.
+            //AppendAllText lägger till EN rad sist i filen. Lägger till listan en gång till utan att ta bort den tidigare.
             //CreateText 
             //ReadAllLines läser ALLA rader och tar upp ram-minne 
             //ReadLines läser EN rad i taget. använd därför denna när läsa filer

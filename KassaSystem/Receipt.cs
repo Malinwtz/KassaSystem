@@ -11,28 +11,57 @@ namespace KassaSystem
     public class AllReceipts
     {
         private List<SingleReceipt> _listOfSingleReceipts = new List<SingleReceipt>();
-        
+
         public AllReceipts()
         {
 
         }
 
         public List<SingleReceipt> ListOfSingleReceipts
-        { 
-            get { return _listOfSingleReceipts; } 
-            set { _listOfSingleReceipts = value; }        
+        {
+            get { return _listOfSingleReceipts; }
+            set { _listOfSingleReceipts = value; }
         }
-        //public void AddToListOfSingleReceipts(string productID, string productName, string productUnit, 
-        //    decimal price, decimal totalPrice, int count)
-        //{   
-        //        _listOfSingleReceipts.Add(new SingleReceipt(productID, productName, productUnit,
-        //              price, totalPrice, count));
-        //}
+        
         public void AddToListOfSingleReceipts(Products product)
-        {   
-            _listOfSingleReceipts.Add(new SingleReceipt(product.ProductID, product.ProductName, 
+        {
+            _listOfSingleReceipts.Add(new SingleReceipt(product.ProductID, product.ProductName,
                 product.ProductUnit, product.ProductPrice, product.TotalPrice, product.Count));
         }
+        private int GetNumberOfReceipt()
+        {
+            var fileName = "Receipt number.txt";
+            if (File.Exists(fileName))
+            {
+                var lastLine = File.ReadLines(fileName).Last();
+                var number = Convert.ToInt32(lastLine);
+                number++;
+                File.AppendAllText(fileName, number + Environment.NewLine);
+                return number;
+            }
+            else
+            {
+                File.AppendAllText(fileName, 1 + Environment.NewLine);
+                return 1;
+            }
+        }
+        public void SaveToReceipt()
+        {   
+            var fileName = DateTime.Now.ToString("RECEIPT_yyy-MM-dd") + ".txt";
+            var lastNumber = GetNumberOfReceipt();
+            var numberLine = $"KVITTO NR {lastNumber}";
+            File.AppendAllText(fileName, Environment.NewLine);
+            File.AppendAllText(fileName, numberLine + Environment.NewLine); 
+
+            foreach (var row in ListOfSingleReceipts)
+            {
+                var line = $"{row.ProductName} {row.Count} * {row.Price} = {row.Price * row.Count}kr";
+                File.AppendAllText(fileName, line + Environment.NewLine);     
+            }
+            var total = $"Total: {Convert.ToString(CalculateTotal())}kr";
+            File.AppendAllText(fileName, total + Environment.NewLine);
+        }
+
         public decimal CalculateTotal()
         {   
             decimal total = 0;
