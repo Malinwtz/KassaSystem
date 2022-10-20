@@ -21,7 +21,6 @@ namespace KassaSystem
             get { return _listOfProducts; }
             set { _listOfProducts = value; }
         }
-
        
         public void CreateNewProduct()
         {
@@ -45,7 +44,7 @@ namespace KassaSystem
             var newProduct = Console.ReadLine().Trim(); 
             var newProductArray = newProduct.Split(';');
             
-            if (newProductArray.Length != 4 || TryUserInputDecimal(newProductArray[3]) == false)
+            if (newProductArray.Length > 4 || TryUserInputDecimal(newProductArray[3]) == false)
             {
                 Console.WriteLine("Felaktig input");
             }
@@ -57,29 +56,7 @@ namespace KassaSystem
                 AddToFile(product);
             }
         }
-        //public void DeleteProduct()
-        //{
-        //    var fileName = "Products.txt";
-        //    File.WriteAllLines(fileName,
-        //        File.ReadLines(fileName).Where(l => l != "removeme").ToList());
-        //    //readfromfile
-
-        //    //ta bort objekt från fil
-        //}
-
-        ////SKAPA NYTT OBJEKT AV TYPEN PRODUCT
-        //var result = new List<Products>();
-        //    //FÖR VARJE RAD I TEXTFILEN 
-        //   foreach(var line in File.ReadLines("Products.txt")) 
-        //         //ReadAllLines läser ALLA rader och tar upp ram-minne //ReadLines läser EN rad i taget. använd därför denna när läsa filer
-        //    {
-        //        //DELA RADEN LINE, LÄGG ALLA DELARNA I EN ARRAY 
-        //        var parts = line.Split(';');
-        ////SKAPA NYTT OBJEKT AV PRODUCTS DÄR STRÄNGARNA BLIR PROPERTIES
-        //var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0);
-        ////ADDERA TILL PRODUKTLISTAN
-        //result.Add(product);
-        //    }
+     
         public void ChangeProduct()
         {  
             var productList = File.ReadAllLines("Products.txt").ToList(); //----MÅSTE LÄGGA TILL KAMPANJPRISET + DATUM I LISTAN
@@ -88,7 +65,8 @@ namespace KassaSystem
                 row.ToString();
                 var rowArray = row.Split(';');
                 _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(), 
-                    rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0));
+                    rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]), 
+                    rowArray[5], rowArray[6]));
             }
          //   _listOfProducts.Sort();
             foreach (var product in _listOfProducts)
@@ -97,8 +75,8 @@ namespace KassaSystem
                     $"{product.ProductPrice}kr");
                 if (product.DiscountPrice > 0) ///---SKRIVER INTE UT RADEN  - LÄS FRÅN LISTAN
                 {
-                    Console.WriteLine($"Kampanjpris: {product.DiscountPrice}kr; {product.DiscountStartDate.ToString("yyyy-MM-dd")}" +
-                        $"-{product.DiscountEndDate.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine($"  *KAMPANJPRIS: {product.DiscountPrice}kr; {product.DiscountStartDate:yyyy-MM-dd}" +
+                        $" - {product.DiscountEndDate:yyyy-MM-dd}");
                 }
             }
             
@@ -114,10 +92,6 @@ namespace KassaSystem
                     {
                         Console.WriteLine("Tar bort från listan");
                         _listOfProducts.Remove(row);
-
-                        //var itemToRemove = resultlist.Single(r => r.Id == 2);
-                        //resultList.Remove(itemToRemove);
-
                     }
                     else if (select == 2)
                     {
@@ -141,6 +115,7 @@ namespace KassaSystem
                         }
                         else if (slct == 2) 
                         {
+
                             Console.WriteLine("Skriv in startdatum för kampanjpriset (yyyy MM dd) :");
                             DateTime dateStart = Convert.ToDateTime(Console.ReadLine());
                             Console.WriteLine("Skriv in slutdatum för kampanjpriset (yyyy MM dd) :");
@@ -148,21 +123,9 @@ namespace KassaSystem
                             Console.WriteLine("Skriv in kampanjpris:");
                             decimal discount = Convert.ToDecimal(Console.ReadLine());
                             
-                            row.DiscountStartDate = dateStart;
-                            row.DiscountEndDate = dateEnd;
+                            row.DiscountStartDate = dateStart.ToString("yyyy-MM-dd");
+                            row.DiscountEndDate = dateEnd.ToString("yyyy-MM-dd");
                             row.DiscountPrice = discount;
-                            //sparas i produkter.txt 
-                            //måste hämtas från produkter.txt
-
-                            //---VARJE GÅNG NY VARA VÄLJS - KOLLA OM DISCOUNT DATE STÄMMER ÖVERRENS - 
-                            //---I SÅ FALL, BYT UT PRICE MOT DISCOUNT PRICE
-                            // - KSIfToday();
-                           
-                            //---ÄNDRA INTE URSPRUNGLIGT PRIS - ÄNDRA BARA JUST DEN GÅNGEN VARAN VÄLJS 
-                            //---OCH SPARAS TILL KVITTOT
-
-                            //----I ADMIN - TILLDELA VÄRDEN TILL DISCOUNT PRICE OCH DATE
-
                         }
                     }
                     else if (select == 5)
@@ -176,31 +139,15 @@ namespace KassaSystem
             }
            
             File.Delete("Products.txt");
-            var line = "";
+         
             foreach (var row in _listOfProducts)
             {   
-                line = $"{row.ProductID};{row.ProductName};{row.ProductUnit};{row.ProductPrice};" +
+                var line = $"{row.ProductID};{row.ProductName};{row.ProductUnit};{row.ProductPrice};" +
                     $"{row.DiscountPrice};{row.DiscountStartDate};{row.DiscountEndDate}";
                 File.AppendAllText("Products.txt", line + Environment.NewLine);
             }
-
-            //WriteAllText skriver bara ut sista raden i listan till filen
-            //AppendAllText lägger till EN rad sist i filen. Lägger till listan en gång till utan att ta bort den tidigare.
-            //CreateText 
-            //ReadAllLines läser ALLA rader och tar upp ram-minne 
-            //ReadLines läser EN rad i taget. använd därför denna när läsa filer
-
         }
 
-        //public decimal CheckIfDiscount(Products product) //DateTime start, DateTime end, decimal price
-        //{
-        //    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
-        //    {
-        //        return Convert.ToDecimal(product.ProductPrice);
-        //    }
-                
-        //    else return Convert.ToDecimal(product.ProductPrice);
-        //}
         private int ShowMenuChangeProduct()
         {
             Console.WriteLine("1. Ta bort");
@@ -220,7 +167,6 @@ namespace KassaSystem
                 Console.WriteLine("Felaktig input");
             }
         }
-
         private void AddToFile(Products product)
         {
             var line = $"{product.ProductID};{product.ProductName};{product.ProductUnit};{product.ProductPrice}";
@@ -243,10 +189,9 @@ namespace KassaSystem
                 Console.WriteLine(" ");
                 Console.WriteLine("1. Skapa ny produkt");
                 Console.WriteLine("2. Ta bort eller ändra produkt");
-                Console.WriteLine("3. Kampanjpris");
                 Console.WriteLine("0. Avsluta");
                 var sel = Convert.ToInt32(Console.ReadLine());
-                if (sel >= 0 && sel <= 4) return sel;
+                if (sel >= 0 && sel <= 3) return sel;
                 Console.WriteLine("Felaktig input");
             }
         }
@@ -264,3 +209,41 @@ namespace KassaSystem
 //- LÄS HELA FILEN OCH GÖR OM VARJE RAD TILL PRODUKT MED NYTT PRIS
 //OM DATETIME STÄMMER - SKRIV UT NY PROPERTY SOM HETER DIISCOUNTPRICE?
 
+//public void DeleteProduct()
+//{
+//    var fileName = "Products.txt";
+//    File.WriteAllLines(fileName,
+//        File.ReadLines(fileName).Where(l => l != "removeme").ToList());
+//    //readfromfile
+
+//    //ta bort objekt från fil
+//}
+
+////SKAPA NYTT OBJEKT AV TYPEN PRODUCT
+//var result = new List<Products>();
+//    //FÖR VARJE RAD I TEXTFILEN 
+//   foreach(var line in File.ReadLines("Products.txt")) 
+//         //ReadAllLines läser ALLA rader och tar upp ram-minne //ReadLines läser EN rad i taget. använd därför denna när läsa filer
+//    {
+//        //DELA RADEN LINE, LÄGG ALLA DELARNA I EN ARRAY 
+//        var parts = line.Split(';');
+////SKAPA NYTT OBJEKT AV PRODUCTS DÄR STRÄNGARNA BLIR PROPERTIES
+//var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0);
+////ADDERA TILL PRODUKTLISTAN
+//result.Add(product);
+//    }
+
+//public decimal CheckIfDiscount(Products product) //DateTime start, DateTime end, decimal price
+//{
+//    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
+//    {
+//        return Convert.ToDecimal(product.ProductPrice);
+//    }
+
+//    else return Convert.ToDecimal(product.ProductPrice);
+//}
+//WriteAllText skriver bara ut sista raden i listan till filen
+//AppendAllText lägger till EN rad sist i filen. Lägger till listan en gång till utan att ta bort den tidigare.
+//CreateText 
+//ReadAllLines läser ALLA rader och tar upp ram-minne 
+//ReadLines läser EN rad i taget. använd därför denna när läsa filer

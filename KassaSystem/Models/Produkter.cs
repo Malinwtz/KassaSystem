@@ -15,25 +15,28 @@ namespace KassaSystem.Models
         private decimal _productPrice;
         private decimal _totalPrice;
         private int _count;
-        private DateTime _discountStartDate;
-        private DateTime _discountEndDate;
         private decimal _discountPrice;
+        private string _discountStartDate;
+        private string _discountEndDate;
+        
         //CONSTRUCTORS
         public Products() 
         {
 
         }
         public Products(string productID, string productName, string productUnit, decimal productPrice, 
-            decimal totalPrice) 
+            decimal totalPrice, decimal discountPrice = 0, string discountStartDate = null, 
+            string discountEndDate = null) 
         {
             _productID = productID;
             _productName = productName;
             _productUnit = productUnit;
             _productPrice = productPrice;
             _totalPrice = totalPrice;
-            _discountStartDate = DateTime.MinValue;
-            _discountEndDate = DateTime.MinValue;
-            _discountPrice = 0;
+            _discountPrice = discountPrice;
+            _discountStartDate = discountStartDate;
+            _discountEndDate = discountEndDate;
+            
         }
         //PROPERTIES
         public string ProductID 
@@ -65,11 +68,11 @@ namespace KassaSystem.Models
         {
             get { return _count; } set { _count = value; }
         }
-        public DateTime DiscountStartDate
+        public string DiscountStartDate
         {
             get { return _discountStartDate; } set { _discountStartDate = value; }
         }
-        public DateTime DiscountEndDate
+        public string DiscountEndDate
         {
             get { return _discountEndDate; } set { _discountEndDate = value; }
         }
@@ -88,10 +91,13 @@ namespace KassaSystem.Models
         }
         public void CheckIfDiscount(Products product)
         {
-            var days = Convert.ToInt32((product.DiscountEndDate - product.DiscountStartDate).TotalDays);
+            var endDate = Convert.ToDateTime(product.DiscountEndDate);
+            var startDate = Convert.ToDateTime(product.DiscountStartDate);
+
+            var days = Convert.ToInt32((endDate - startDate).TotalDays);
             for (var i = 0; i < days; i++)
             {
-                var addedDays = product.DiscountStartDate.AddDays(i);
+                var addedDays = startDate.AddDays(i);
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
                 {
                     Console.WriteLine("*Kampanjpris*");

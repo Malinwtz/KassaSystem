@@ -1,6 +1,6 @@
-﻿300;Banan;kilopris;26,95
-301;Potatis;kilopris;14,50
-302;Saltgurka;styckpris;23,95
-303;Oliver;styckpris;29,50
-304;Kanelbulle;styckpris;10,00
-305;Äpple;kilopris;39,00
+﻿300;Banan;kilopris;26,95;0;0001-01-01;0001-01-01
+301;Potatis;kilopris;14,50;0;0001-01-01;0001-01-01
+302;Saltgurka;styckpris;23,95;0;0001-01-01;0001-01-01
+303;Oliver;styckpris;29,50;0;0001-01-01;0001-01-01
+304;Kanelbulle;styckpris;10,00;0;0001-01-01;0001-01-01
+305;Äpple;kilopris;39,00;0;0001-01-01;0001-01-01

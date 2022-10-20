@@ -91,11 +91,6 @@ namespace KassaSystem
                     {
                         admin.ChangeProduct();
                     }
-                    else if (sel2 == 3)
-                    {
-                        //kampanjpris mellan datetime-datetime
-                      //  CheckIfPromotionalPrice(DateTime start, DateTime end, int price);
-                    }
                     else if (sel2 == 0) 
                         break;
                 }
@@ -109,8 +104,6 @@ namespace KassaSystem
                     Console.WriteLine("Felaktig input");
             }
         }
-
-      
 
         private void SaveProductIfAlreadyInList(AllReceipts allReceipt, Products currentProduct, int numberOfProducts)
         {
