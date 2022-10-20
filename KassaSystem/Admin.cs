@@ -82,7 +82,7 @@ namespace KassaSystem
         //    }
         public void ChangeProduct()
         {  
-            var productList = File.ReadAllLines("Products.txt").ToList();
+            var productList = File.ReadAllLines("Products.txt").ToList(); //----MÅSTE LÄGGA TILL KAMPANJPRISET + DATUM I LISTAN
             foreach (var row in productList)
             {   
                 row.ToString();
@@ -94,7 +94,12 @@ namespace KassaSystem
             foreach (var product in _listOfProducts)
             {
                 Console.WriteLine($"{product.ProductID};{product.ProductName};{product.ProductUnit};" +
-                    $"{product.ProductPrice}");
+                    $"{product.ProductPrice}kr");
+                if (product.DiscountPrice > 0) ///---SKRIVER INTE UT RADEN  - LÄS FRÅN LISTAN
+                {
+                    Console.WriteLine($"Kampanjpris: {product.DiscountPrice}kr; {product.DiscountStartDate.ToString("yyyy-MM-dd")}" +
+                        $"-{product.DiscountEndDate.ToString("yyyy-MM-dd")}");
+                }
             }
             
             Console.WriteLine(Environment.NewLine + "Skriv in ID på den produkt du vill ändra:");
@@ -126,6 +131,8 @@ namespace KassaSystem
                     }
                     else if (select == 4)
                     {
+                        Console.WriteLine("1. Skriv in ett nytt pris");
+                        Console.WriteLine("2. Skriv in ett kampanjpris");
                         var slct = Convert.ToInt32(Console.ReadLine());
                         if (slct == 1)
                         {
@@ -144,6 +151,8 @@ namespace KassaSystem
                             row.DiscountStartDate = dateStart;
                             row.DiscountEndDate = dateEnd;
                             row.DiscountPrice = discount;
+                            //sparas i produkter.txt 
+                            //måste hämtas från produkter.txt
 
                             //---VARJE GÅNG NY VARA VÄLJS - KOLLA OM DISCOUNT DATE STÄMMER ÖVERRENS - 
                             //---I SÅ FALL, BYT UT PRICE MOT DISCOUNT PRICE
@@ -170,7 +179,8 @@ namespace KassaSystem
             var line = "";
             foreach (var row in _listOfProducts)
             {   
-                line = $"{row.ProductID};{row.ProductName};{row.ProductUnit};{row.ProductPrice}";
+                line = $"{row.ProductID};{row.ProductName};{row.ProductUnit};{row.ProductPrice};" +
+                    $"{row.DiscountPrice};{row.DiscountStartDate};{row.DiscountEndDate}";
                 File.AppendAllText("Products.txt", line + Environment.NewLine);
             }
 
@@ -182,15 +192,15 @@ namespace KassaSystem
 
         }
 
-        public decimal CheckIfDiscount(Products product) //DateTime start, DateTime end, decimal price
-        {
-            if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
-            {
-                return Convert.ToDecimal(product.ProductPrice /* * 0, 8*/);
-            }
+        //public decimal CheckIfDiscount(Products product) //DateTime start, DateTime end, decimal price
+        //{
+        //    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
+        //    {
+        //        return Convert.ToDecimal(product.ProductPrice);
+        //    }
                 
-            else return Convert.ToDecimal(product.ProductPrice);
-        }
+        //    else return Convert.ToDecimal(product.ProductPrice);
+        //}
         private int ShowMenuChangeProduct()
         {
             Console.WriteLine("1. Ta bort");

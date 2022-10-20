@@ -77,8 +77,6 @@ namespace KassaSystem.Models
         {
             get { return _discountPrice; } set { _discountPrice = value; }
         }
-
-        //METHODS
         public Products FindProductFromProductID(List<Products> allProducts, string prod)
         {
             foreach (var product in allProducts)
@@ -88,7 +86,7 @@ namespace KassaSystem.Models
             }
             return null;
         }
-        public void CheckIfDiscount(Products product )
+        public void CheckIfDiscount(Products product)
         {
             var days = Convert.ToInt32((product.DiscountEndDate - product.DiscountStartDate).TotalDays);
             for (var i = 0; i < days; i++)
@@ -96,11 +94,16 @@ namespace KassaSystem.Models
                 var addedDays = product.DiscountStartDate.AddDays(i);
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
                 {
-                    Console.WriteLine("Ändrar pris");
+                    Console.WriteLine("*Kampanjpris*");
                     product.ProductPrice = product.DiscountPrice;
                     break;
                 }
             }
+        }
+        public decimal CalculateTotalPriceSingleProduct(int numberOfProducts, decimal price)
+        {
+            var totalPrice = price * numberOfProducts;
+            return totalPrice;
         }
     }
 }

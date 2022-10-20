@@ -59,6 +59,8 @@ namespace KassaSystem
 
                         else if (currentProduct != null && TryUserInputNumbers(userInput[1]) == true)
                         {
+                            currentProduct.CheckIfDiscount(currentProduct);
+
                             var numberOfProducts = Convert.ToInt32(userInput[1]);
                             if (allReceipt.IsListContaining(currentProduct) == true)
                             {
@@ -117,7 +119,7 @@ namespace KassaSystem
                 if (row.ProductID == currentProduct.ProductID)
                 {
                     row.Count += numberOfProducts;
-                    row.TotalPrice = CalculateTotalPriceSingleProduct(row.Count, Convert.ToDecimal(row.Price));
+                    row.TotalPrice = currentProduct.CalculateTotalPriceSingleProduct(row.Count, Convert.ToDecimal(row.Price));
 
                     Console.Clear();
                     Console.WriteLine($"{row.ProductName} {row.Count} * " + $"{row.Price} = {row.TotalPrice}");
@@ -127,7 +129,7 @@ namespace KassaSystem
         private void SaveNewProductToLIst(Products currentProduct, AllReceipts allReceipt, int numberOfProducts)
         {
             currentProduct.Count = numberOfProducts;
-            currentProduct.TotalPrice = CalculateTotalPriceSingleProduct(currentProduct.Count,
+            currentProduct.TotalPrice = currentProduct.CalculateTotalPriceSingleProduct(currentProduct.Count,
                 Convert.ToDecimal(currentProduct.ProductPrice));
 
             allReceipt.AddToListOfSingleReceipts(currentProduct);
@@ -185,11 +187,7 @@ namespace KassaSystem
             }
             return result;
         }
-        private decimal CalculateTotalPriceSingleProduct(int numberOfProducts, decimal price)
-        {
-            var totalPrice = price * numberOfProducts;
-            return totalPrice;
-        }
+       
     }
 }
 
