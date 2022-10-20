@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -131,41 +132,29 @@ namespace KassaSystem
                             Console.WriteLine("Skriv in ett nytt pris på produkten:");
                             row.ProductPrice = Convert.ToDecimal(Console.ReadLine());
                         }
-                        else if (slct == 2) // kampanjpris
+                        else if (slct == 2) 
                         {
-                            Console.WriteLine("Skriv in startdatum för kampanjpriset (yyyy, MM, dd) :");
-                            DateTime dateTime = Convert.ToDateTime(Console.ReadLine());
-                            Console.WriteLine("Skriv in hur många dagar kampanjpriset ska gälla:");
-                            int days = Convert.ToInt32(Console.ReadLine());
+                            Console.WriteLine("Skriv in startdatum för kampanjpriset (yyyy MM dd) :");
+                            DateTime dateStart = Convert.ToDateTime(Console.ReadLine());
+                            Console.WriteLine("Skriv in slutdatum för kampanjpriset (yyyy MM dd) :");
+                            DateTime dateEnd = Convert.ToDateTime(Console.ReadLine());
                             Console.WriteLine("Skriv in kampanjpris:");
                             decimal discount = Convert.ToDecimal(Console.ReadLine());
+                            
+                            row.DiscountStartDate = dateStart;
+                            row.DiscountEndDate = dateEnd;
+                            row.DiscountPrice = discount;
 
-                            if (DateTime.Now == dateTime.AddDays(days))
-                            {
-                                row.ProductPrice = discount;
+                            //---VARJE GÅNG NY VARA VÄLJS - KOLLA OM DISCOUNT DATE STÄMMER ÖVERRENS - 
+                            //---I SÅ FALL, BYT UT PRICE MOT DISCOUNT PRICE
+                            // - KSIfToday();
+                           
+                            //---ÄNDRA INTE URSPRUNGLIGT PRIS - ÄNDRA BARA JUST DEN GÅNGEN VARAN VÄLJS 
+                            //---OCH SPARAS TILL KVITTOT
 
-                            }
-
-                            //om fil finns
-                            //ny fil skapas med product.name + discount.txt
-
-                            //SKAPA FIL SOM HETER PRODUKTNAMNET - VARJE GÅNG NY PRODUKT - SKAPA DISCOUNT-FIL
-                            //DÄR STÅR PRODUKT.ID OCH KAMPANJPRIS ex 300;15
-                            //EN NY FIL FÖR VARJE PRODUKT
-                            //SIST I FILEN DEN DATETIME - DATETIME FÖR KAMPANJEN SOM GÄLLER
-                            //LÄS SISTA RAD I FIL VARJE GÅNG I KASSA
-                            //----HUR SPARA NY FIL I KASSA? MÅSTE REDAN FINNAS FILER - EN/PRODUKT
-                            //OM DAGENS DATUM ÄR I SPANNET: DATETIME - DATETIME
-                               //- LÄS HELA FILEN OCH GÖR OM VARJE RAD TILL PRODUKT MED NYTT PRIS
-
-                            //OM DATETIME STÄMMER - SKRIV UT NY PROPERTY SOM HETER DIISCOUNTPRICE?
-
-
+                            //----I ADMIN - TILLDELA VÄRDEN TILL DISCOUNT PRICE OCH DATE
 
                         }
-
-
-
                     }
                     else if (select == 5)
                     {
@@ -193,14 +182,14 @@ namespace KassaSystem
 
         }
 
-        public decimal CheckIfDiscount(DateTime start, DateTime end, decimal price)
+        public decimal CheckIfDiscount(Products product) //DateTime start, DateTime end, decimal price
         {
             if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
             {
-                return Convert.ToDecimal(price /* * 0, 8*/);
+                return Convert.ToDecimal(product.ProductPrice /* * 0, 8*/);
             }
                 
-            else return Convert.ToDecimal(price);
+            else return Convert.ToDecimal(product.ProductPrice);
         }
         private int ShowMenuChangeProduct()
         {
@@ -253,3 +242,15 @@ namespace KassaSystem
         }
     }
 }
+//om fil finns
+//ny fil skapas med product.name + discount.txt
+//SKAPA FIL SOM HETER PRODUKTNAMNET - VARJE GÅNG NY PRODUKT - SKAPA DISCOUNT-FIL
+//DÄR STÅR PRODUKT.ID OCH KAMPANJPRIS ex 300;15
+//EN NY FIL FÖR VARJE PRODUKT
+//SIST I FILEN DEN DATETIME - DATETIME FÖR KAMPANJEN SOM GÄLLER
+//LÄS SISTA RAD I FIL VARJE GÅNG I KASSA
+//----HUR SPARA NY FIL I KASSA? MÅSTE REDAN FINNAS FILER - EN/PRODUKT
+//OM DAGENS DATUM ÄR I SPANNET: DATETIME - DATETIME
+//- LÄS HELA FILEN OCH GÖR OM VARJE RAD TILL PRODUKT MED NYTT PRIS
+//OM DATETIME STÄMMER - SKRIV UT NY PROPERTY SOM HETER DIISCOUNTPRICE?
+

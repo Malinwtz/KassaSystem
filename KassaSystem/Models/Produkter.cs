@@ -15,19 +15,25 @@ namespace KassaSystem.Models
         private decimal _productPrice;
         private decimal _totalPrice;
         private int _count;
+        private DateTime _discountStartDate;
+        private DateTime _discountEndDate;
+        private decimal _discountPrice;
         //CONSTRUCTORS
         public Products() 
         {
 
         }
-        public Products(string productID, string productName, string productUnit, decimal productPrice, decimal totalPrice /*, int count*/) 
+        public Products(string productID, string productName, string productUnit, decimal productPrice, 
+            decimal totalPrice) 
         {
             _productID = productID;
             _productName = productName;
             _productUnit = productUnit;
             _productPrice = productPrice;
             _totalPrice = totalPrice;
-      //      _count = count; 
+            _discountStartDate = DateTime.MinValue;
+            _discountEndDate = DateTime.MinValue;
+            _discountPrice = 0;
         }
         //PROPERTIES
         public string ProductID 
@@ -44,21 +50,32 @@ namespace KassaSystem.Models
             }
         }
         public string ProductUnit 
-            { get { return _productUnit; } set { _productUnit = value; } }
+        { 
+            get { return _productUnit; } set { _productUnit = value; } 
+        }
         public decimal ProductPrice
         {
-            get { return _productPrice; }
-            set { _productPrice = value;}
+            get { return _productPrice; } set { _productPrice = value;}
         }
         public decimal TotalPrice
         {
-            get { return _totalPrice; }
-            set { _totalPrice = value; } 
+            get { return _totalPrice; } set { _totalPrice = value; } 
         }
         public int Count
         {
-            get { return _count; }
-            set { _count = value; }
+            get { return _count; } set { _count = value; }
+        }
+        public DateTime DiscountStartDate
+        {
+            get { return _discountStartDate; } set { _discountStartDate = value; }
+        }
+        public DateTime DiscountEndDate
+        {
+            get { return _discountEndDate; } set { _discountEndDate = value; }
+        }
+        public decimal DiscountPrice
+        {
+            get { return _discountPrice; } set { _discountPrice = value; }
         }
 
         //METHODS
@@ -70,6 +87,20 @@ namespace KassaSystem.Models
                     return product;
             }
             return null;
+        }
+        public void CheckIfDiscount(Products product )
+        {
+            var days = Convert.ToInt32((product.DiscountEndDate - product.DiscountStartDate).TotalDays);
+            for (var i = 0; i < days; i++)
+            {
+                var addedDays = product.DiscountStartDate.AddDays(i);
+                if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
+                {
+                    Console.WriteLine("Ändrar pris");
+                    product.ProductPrice = product.DiscountPrice;
+                    break;
+                }
+            }
         }
     }
 }
