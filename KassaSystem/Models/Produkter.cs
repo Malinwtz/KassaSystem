@@ -24,8 +24,8 @@ namespace KassaSystem.Models
         {
 
         }
-        public Products(string productID, string productName, string productUnit, decimal productPrice, 
-            decimal totalPrice, decimal discountPrice = 0, string discountStartDate = null, 
+        public Products(string productID, string productName, string productUnit, decimal productPrice,
+            decimal totalPrice = 0, decimal discountPrice = 0, string discountStartDate = null, 
             string discountEndDate = null) 
         {
             _productID = productID;

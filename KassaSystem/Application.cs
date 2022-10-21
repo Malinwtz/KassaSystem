@@ -20,11 +20,6 @@ namespace KassaSystem
 
             while (true)
             {
-               
-
-                //Console.WriteLine($"{DateTime.Now.DayOfWeek}== {DayOfWeek.Thursday}&& {DateTime.Now.Hour < 13}"); 
-                //Console.WriteLine($"{DateTime.Now.AddDays(3)}");
-
                 ShowMenu();
                 var sel = ReturnFromMenu(); 
 
@@ -84,13 +79,11 @@ namespace KassaSystem
                     Console.Clear();
                     var sel2 = Admin.AdminMenu();
                     if (sel2 == 1)
-                    {
                         admin.CreateNewProduct();
-                    }
                     else if (sel2 == 2)
-                    {
                         admin.ChangeProduct();
-                    }
+                    else if (sel2 == 3)
+                        admin.ShowProductsWithDiscount();
                     else if (sel2 == 0) 
                         break;
                 }
@@ -175,7 +168,7 @@ namespace KassaSystem
             foreach(var line in File.ReadLines("Products.txt")) 
             {   
                 var parts = line.Split(';');
-                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0); 
+                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3])); 
                 result.Add(product);
             }
             return result;
