@@ -135,7 +135,22 @@ namespace KassaSystem
             ShowProductsWithDiscount();
             
             Console.WriteLine(Environment.NewLine + "Skriv in ID på den produkt du vill ändra:"); //CheckIfIdExists
-            var selChange = Console.ReadLine(); 
+            var selChange = "";
+            
+            while (true)
+            {
+                try ///KANSKE TRYID ISTÄLLET FÖR TRYCACHT HÄR I LOOPEN
+                { 
+                    selChange = Console.ReadLine();
+                    break;
+                }
+                catch { Console.WriteLine("Felaktig input"); }
+
+                var id = IfIdExists(selChange);
+                if (id == true) break;
+            }
+
+
             foreach (var row in _listOfProducts.ToList())
             {
                 if (row.ProductID.ToLower() == selChange.ToLower())
@@ -318,8 +333,10 @@ namespace KassaSystem
             Console.WriteLine("3. Visa produkter och kampanjpriser");
             Console.WriteLine("0. Avsluta" + Environment.NewLine);
             while (true)
-            {   
-                var sel = Convert.ToInt32(Console.ReadLine());
+            {
+                var sel = 0;
+                try { sel = Convert.ToInt32(Console.ReadLine()); }
+                catch { Console.WriteLine("Felaktig input"); }
                 if (sel >= 0 && sel <= 3) 
                     return sel;
                 Console.WriteLine("Felaktig input");

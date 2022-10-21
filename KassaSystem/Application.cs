@@ -138,7 +138,7 @@ namespace KassaSystem
             Console.WriteLine($"KASSA" + Environment.NewLine);
             Console.WriteLine("1.Ny kund");
             Console.WriteLine("2.Administreringsverktyg");
-            Console.WriteLine("0.Avsluta");
+            Console.WriteLine("0.Avsluta" + Environment.NewLine);
         }
         public int ReturnFromMenu()
         {
