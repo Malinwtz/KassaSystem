@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
@@ -38,7 +39,14 @@ namespace KassaSystem
 
             Console.WriteLine(Environment.NewLine + "Skriv in ny produkt");
             Console.WriteLine("ProduktID:");
-            var newId = TryId();
+            var newId = "";
+            while (true)
+            {
+                newId = TryId();
+                var selBool = IfIdExists(newId);
+                if (selBool == true) Console.WriteLine(Environment.NewLine + "ID finns redan");
+                if (selBool == false) break;
+            }
             Console.WriteLine("Namn:");
             var newName = TryName();
             Console.WriteLine("Enhet: (kilopris/styckpris)");
@@ -51,6 +59,8 @@ namespace KassaSystem
             product.DiscountStartDate = "0001-01-01";
             product.DiscountEndDate = "0001-01-01";
                 AddToFile(product);
+
+            Console.WriteLine("Ny produkt sparad" + Environment.NewLine);
         }
         public bool IfIdExists(string id)
         {
@@ -58,8 +68,7 @@ namespace KassaSystem
             foreach (var product in list)
             {
                 if (product.ProductID.ToString() == id)
-                {
-                    Console.WriteLine(Environment.NewLine + "ID finns redan");
+                {   
                     return true;
                 }
             }
@@ -115,17 +124,14 @@ namespace KassaSystem
         }
         public string TryId()
         {
-         
             while (true)
             {  
                 try
                 {
                     var newId = Convert.ToInt32(Console.ReadLine());
-                    var re = IfIdExists(newId.ToString());
-
-                    if (re = true) continue; 
-                    if (re == false && Convert.ToString(newId).Length == 3)
+                    if (newId.ToString().Count() == 3)
                         return Convert.ToString(newId);
+                    else Console.WriteLine("Felaktig input");
                 }
                 catch { Console.WriteLine("Felaktig input"); }
             }
@@ -134,22 +140,16 @@ namespace KassaSystem
         {
             ShowProductsWithDiscount();
             
-            Console.WriteLine(Environment.NewLine + "Skriv in ID på den produkt du vill ändra:"); //CheckIfIdExists
+            Console.WriteLine( Environment.NewLine + "Skriv in ID på den produkt du vill ändra:");
             var selChange = "";
-            
+
             while (true)
             {
-                try ///KANSKE TRYID ISTÄLLET FÖR TRYCACHT HÄR I LOOPEN
-                { 
-                    selChange = Console.ReadLine();
-                    break;
-                }
-                catch { Console.WriteLine("Felaktig input"); }
-
-                var id = IfIdExists(selChange);
-                if (id == true) break;
+                selChange = TryId();
+                var selBool = IfIdExists(selChange);
+                if (selBool == false) Console.WriteLine(Environment.NewLine + "ID finns inte");
+                if (selBool == true) break;
             }
-
 
             foreach (var row in _listOfProducts.ToList())
             {
@@ -166,18 +166,28 @@ namespace KassaSystem
                     {
                         Console.WriteLine("Skriv in ett nytt namn på produkten:");
                         row.ProductName = TryName();
-                        Console.WriteLine(Environment.NewLine + "Namn sparat");
+                        Console.WriteLine("Namn sparat" + Environment.NewLine );
                     }
                     else if (select == 3)
                     {   
                         Console.WriteLine("Skriv in ett nytt ID på produkten:");
-                        row.ProductID = TryId();
-                        Console.WriteLine(Environment.NewLine + "ID sparat");
+                        var newId = "";
+                        while (true)
+                        {
+                            newId = TryId();
+                            var selBool = IfIdExists(newId);
+                            if (selBool == true) Console.WriteLine(Environment.NewLine + "ID finns redan");
+                            if (selBool == false) break;
+                        }
+                        row.ProductID = newId;
+
+                        Console.WriteLine("ID sparat" + Environment.NewLine );
                     }
                     else if (select == 4)
                     {
                         Console.WriteLine("Skriv in en ny enhet på produkten:");
                         row.ProductUnit = TryUnit();
+                        Console.WriteLine("Enhet sparad" + Environment.NewLine);
                     }
                     else if (select == 5)
                     {
@@ -214,16 +224,21 @@ namespace KassaSystem
                         Console.WriteLine("Skriv in ett nytt pris på produkten:");
                         row.ProductPrice = TryPrice();
                         Console.WriteLine("Pris sparat" + Environment.NewLine);
+                        break;
                     }
                     else if (slct == 2)
                     {
                         CreateDiscount(row);
                         Console.WriteLine(Environment.NewLine + "Kampanjpris sparat");
+                        break;
                     }
                     else if (slct == 0)
                         break;
+                    else
+                        Console.WriteLine("Felaktig input");
                 }
                 catch { Console.WriteLine("Felaktig input"); }
+                
             }
         }
 
@@ -289,6 +304,7 @@ namespace KassaSystem
                         $" - {product.DiscountEndDate:yyyy-MM-dd}");
                 }
             }
+            Console.WriteLine(Environment.NewLine);
         }
 
         private int ShowMenuChangeProduct()

@@ -83,7 +83,10 @@ namespace KassaSystem
                     else if (sel2 == 2)
                         admin.ChangeProduct();
                     else if (sel2 == 3)
+                    {
                         admin.ShowProductsWithDiscount();
+                        Console.ReadKey();
+                    }   
                     else if (sel2 == 0) 
                         break;
                 }
@@ -135,6 +138,7 @@ namespace KassaSystem
         }
         private void ShowMenu()
         {
+            Console.Clear();
             Console.WriteLine($"KASSA" + Environment.NewLine);
             Console.WriteLine("1.Ny kund");
             Console.WriteLine("2.Administreringsverktyg");
@@ -183,9 +187,6 @@ namespace KassaSystem
 
 
 
-//Kampanjpris: man ska kunna säga att from 2022-10-12 till 2022-10-18 så ska banananerna kosta 10kr
-
-//Kampanjpris: man ska kunna säga att from 2022-10-20 till 2022-10-24 så ska banananerna kosta 11kr
 
 // FELSÖKNING 
 
