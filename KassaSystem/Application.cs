@@ -52,7 +52,7 @@ namespace KassaSystem
                             Console.WriteLine("Felaktig input");
                                 continue;
                         }
-
+                        //skriver inte ut rabattpriset när produkten sparas i lista och vid betalning
                         else if (currentProduct != null && TryUserInputNumbers(userInput[1]) == true)
                         {
                             var id = currentProduct.ProductID.ToString();

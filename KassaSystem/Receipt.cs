@@ -88,14 +88,13 @@ namespace KassaSystem
         }
         public void ShowListOfProducts()
         {
+            Admin admin = new();
+            Products p = new();
             foreach (var row in _listOfSingleReceipts)
             {
                 Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
                     $"= {row.Price * row.Count}kr");
-                //kolla om det är rabatt på varan genom att  läsa från products.txt
-                //hitta rätt id
-                //kolla om discount > 0
-                //isf skriv ut discount
+                p.CheckIfDiscount(row.ProductID);
             }
         }
     }

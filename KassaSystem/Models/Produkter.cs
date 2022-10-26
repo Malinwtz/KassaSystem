@@ -102,6 +102,7 @@ namespace KassaSystem.Models
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
                 {   
                     product.ProductPrice = product.DiscountPrice;
+                    Console.WriteLine($"  *KAMPANJPRIS*");
                     break;
                 }
             }
