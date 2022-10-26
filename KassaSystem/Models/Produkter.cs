@@ -89,8 +89,13 @@ namespace KassaSystem.Models
             }
             return null;
         }
-        public void CheckIfDiscount(Products product)
+        public void CheckIfDiscount(string id)
         {
+            Admin admin = new();
+            
+            var product = admin.FindProductWithId(id);
+            //om id finns - ta fram produkt
+            ///
             var endDate = Convert.ToDateTime(product.DiscountEndDate);
             var startDate = Convert.ToDateTime(product.DiscountStartDate);
 
@@ -100,9 +105,10 @@ namespace KassaSystem.Models
                 var addedDays = startDate.AddDays(i);
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
                 {
-                    Console.WriteLine("*Kampanjpris*");
+                    Console.WriteLine($"*Kampanjpris: {product.DiscountPrice}kr*");
                     product.ProductPrice = product.DiscountPrice;
                     break;
+                    //skriver ut kampanjpris men nästa console.clear tar bort så man inte ser priset. Ändra så det syns vid utskrift
                 }
             }
         }

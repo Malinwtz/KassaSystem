@@ -14,8 +14,6 @@ namespace KassaSystem
         private decimal _price;
         private decimal _totalPrice;
         private int _count;
-
-
         public SingleReceipt(string productID, string productName, string productUnit, decimal price,
             decimal totalPrice, int count)
         {
@@ -44,8 +42,5 @@ namespace KassaSystem
             get { return _count; }
             set { _count = value; }
         }
-      
-
     }
-
 }

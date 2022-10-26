@@ -42,6 +42,7 @@ namespace KassaSystem
                             allReceipt.ShowListOfProducts();
                             allReceipt.WriteTotalAmount();
                             allReceipt.SaveToReceipt();
+                            Console.ReadKey();
                             break;
                         }
 
@@ -54,7 +55,8 @@ namespace KassaSystem
 
                         else if (currentProduct != null && TryUserInputNumbers(userInput[1]) == true)
                         {
-                            currentProduct.CheckIfDiscount(currentProduct);
+                            var id = currentProduct.ProductID.ToString();
+                            currentProduct.CheckIfDiscount(id);
 
                             var numberOfProducts = Convert.ToInt32(userInput[1]);
                             if (allReceipt.IsListContaining(currentProduct) == true)

@@ -25,7 +25,7 @@ namespace KassaSystem
         }
        
         public void CreateNewProduct()
-        {
+        {   
             Console.Clear();
             Console.WriteLine("SKAPA NY PRODUKT" + Environment.NewLine);
             Console.WriteLine("PRODUKTLISTA:");
@@ -39,14 +39,7 @@ namespace KassaSystem
 
             Console.WriteLine(Environment.NewLine + "Skriv in ny produkt");
             Console.WriteLine("ProduktID:");
-            var newId = "";
-            while (true)
-            {
-                newId = TryId();
-                var selBool = IfIdExists(newId);
-                if (selBool == true) Console.WriteLine(Environment.NewLine + "ID finns redan");
-                if (selBool == false) break;
-            }
+            var newId = CheckIfIdExists();
             Console.WriteLine("Namn:");
             var newName = TryName();
             Console.WriteLine("Enhet: (kilopris/styckpris)");
@@ -62,30 +55,46 @@ namespace KassaSystem
 
             Console.WriteLine("Ny produkt sparad" + Environment.NewLine);
         }
-        public bool IfIdExists(string id)
+        public string CheckIfIdExists()
         {
-            var list = MakeListOfTextProducts();
-            foreach (var product in list)
+            while (true)
             {
-                if (product.ProductID.ToString() == id)
-                {   
-                    return true;
-                }
+                var newId = TryId();
+                var id = FindProductWithId(newId);
+                if (id != null) Console.WriteLine(Environment.NewLine + "ID finns redan");
+                else return newId; 
             }
-            return false;
+        }
+        public Products FindProductWithId(string id)
+        {
+            var productId = MakeListOfTextProducts()
+                .FirstOrDefault(p => p.ProductID == id);
+            return productId;
         }
 
-
-        private List<Products> MakeListOfTextProducts()
+        public List<Products> MakeListOfTextProducts()
         {
             var result = new List<Products>();
             foreach (var line in File.ReadLines("Products.txt"))
             {
                 var parts = line.Split(';');
-                var prodct = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0);
+                var prodct = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0,
+                    Convert.ToDecimal(parts[4]), parts[5], parts[6]);
+           //     result.Sort(); sortera i nummerordning
                 result.Add(prodct);
             }
             return result;
+            //
+            //var productList = File.ReadAllLines("Products.txt").ToList();
+            //foreach (var row in productList)
+            //{
+            //    row.ToString();
+            //    var rowArray = row.Split(';');
+            //    _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(),
+            //        rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
+            //        rowArray[5], rowArray[6]));
+            //}
+            ////   _listOfProducts.OrderByDescending();
         }
 
         private decimal TryPrice()
@@ -138,17 +147,19 @@ namespace KassaSystem
         }
         public void ChangeProduct()
         {
+            Console.Clear();
+            Console.WriteLine("ÄNDRA PRODUKT" + Environment.NewLine);
             ShowProductsWithDiscount();
             
-            Console.WriteLine( Environment.NewLine + "Skriv in ID på den produkt du vill ändra:");
+            Console.WriteLine("Skriv in ID på den produkt du vill ändra:");
             var selChange = "";
 
             while (true)
             {
                 selChange = TryId();
-                var selBool = IfIdExists(selChange);
-                if (selBool == false) Console.WriteLine(Environment.NewLine + "ID finns inte");
-                if (selBool == true) break;
+                var id = FindProductWithId(selChange);
+                if (id == null) Console.WriteLine(Environment.NewLine + "ID finns inte");
+                else break;
             }
 
             foreach (var row in _listOfProducts.ToList())
@@ -171,16 +182,8 @@ namespace KassaSystem
                     else if (select == 3)
                     {   
                         Console.WriteLine("Skriv in ett nytt ID på produkten:");
-                        var newId = "";
-                        while (true)
-                        {
-                            newId = TryId();
-                            var selBool = IfIdExists(newId);
-                            if (selBool == true) Console.WriteLine(Environment.NewLine + "ID finns redan");
-                            if (selBool == false) break;
-                        }
+                        var newId = CheckIfIdExists();
                         row.ProductID = newId;
-
                         Console.WriteLine("ID sparat" + Environment.NewLine );
                     }
                     else if (select == 4)
@@ -224,6 +227,7 @@ namespace KassaSystem
                         Console.WriteLine("Skriv in ett nytt pris på produkten:");
                         row.ProductPrice = TryPrice();
                         Console.WriteLine("Pris sparat" + Environment.NewLine);
+                        Console.ReadKey();
                         break;
                     }
                     else if (slct == 2)
@@ -241,7 +245,6 @@ namespace KassaSystem
                 
             }
         }
-
         private void CreateDiscount(Products row)
         {
             while (true)
@@ -278,7 +281,6 @@ namespace KassaSystem
                 }
                 catch { Console.WriteLine("Felaktig input"); }
             }
-
         }
         
         public void ShowProductsWithDiscount()
@@ -293,7 +295,7 @@ namespace KassaSystem
                     rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
                     rowArray[5], rowArray[6]));
             }
-            //   _listOfProducts.Sort();
+            //   _listOfProducts.OrderByDescending();
             foreach (var product in _listOfProducts)
             {
                 Console.WriteLine($"{product.ProductID};{product.ProductName};{product.ProductUnit};" +
