@@ -71,7 +71,6 @@ namespace KassaSystem
                 .FirstOrDefault(p => p.ProductID == id);
             return productId;
         }
-
         public List<Products> MakeListOfTextProducts()
         {
             var result = new List<Products>();
@@ -96,7 +95,6 @@ namespace KassaSystem
             //}
             ////   _listOfProducts.OrderByDescending();
         }
-
         private decimal TryPrice()
         {
             while (true)
@@ -242,7 +240,6 @@ namespace KassaSystem
                         Console.WriteLine("Felaktig input");
                 }
                 catch { Console.WriteLine("Felaktig input"); }
-                
             }
         }
         private void CreateDiscount(Products row)
@@ -300,7 +297,7 @@ namespace KassaSystem
             {
                 Console.WriteLine($"{product.ProductID};{product.ProductName};{product.ProductUnit};" +
                     $"{product.ProductPrice}kr");
-                if (product.DiscountPrice > 0) ///---SKRIVER INTE UT RADEN  - LÄS FRÅN LISTAN
+                if (product.DiscountPrice > 0)
                 {
                     Console.WriteLine($"  *KAMPANJPRIS: {product.DiscountPrice}kr; {product.DiscountStartDate:yyyy-MM-dd}" +
                         $" - {product.DiscountEndDate:yyyy-MM-dd}");

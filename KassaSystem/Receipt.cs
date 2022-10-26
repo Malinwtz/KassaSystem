@@ -92,7 +92,27 @@ namespace KassaSystem
             {
                 Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
                     $"= {row.Price * row.Count}kr");
+                //kolla om det är rabatt på varan genom att  läsa från products.txt
+                //hitta rätt id
+                //kolla om discount > 0
+                //isf skriv ut discount
             }
         }
     }
 }
+/*
+public void WriteProductsWithDiscount()
+{
+foreach (var product in _listOfProducts)
+            {
+                Console.WriteLine($"{product.ProductID};{product.ProductName};{product.ProductUnit};" +
+                    $"{product.ProductPrice}kr");
+                if (product.DiscountPrice > 0) //---läs från lista
+                {
+                    Console.WriteLine($"  *KAMPANJPRIS: {product.DiscountPrice}kr; {product.DiscountStartDate:yyyy-MM-dd}" +
+                        $" - {product.DiscountEndDate:yyyy-MM-dd}");
+                }
+            }
+            Console.WriteLine(Environment.NewLine);
+ }
+ */

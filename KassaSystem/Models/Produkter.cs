@@ -92,23 +92,17 @@ namespace KassaSystem.Models
         public void CheckIfDiscount(string id)
         {
             Admin admin = new();
-            
             var product = admin.FindProductWithId(id);
-            //om id finns - ta fram produkt
-            ///
             var endDate = Convert.ToDateTime(product.DiscountEndDate);
             var startDate = Convert.ToDateTime(product.DiscountStartDate);
-
             var days = Convert.ToInt32((endDate - startDate).TotalDays);
             for (var i = 0; i < days; i++)
             {
                 var addedDays = startDate.AddDays(i);
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
-                {
-                    Console.WriteLine($"*Kampanjpris: {product.DiscountPrice}kr*");
+                {   
                     product.ProductPrice = product.DiscountPrice;
                     break;
-                    //skriver ut kampanjpris men nästa console.clear tar bort så man inte ser priset. Ändra så det syns vid utskrift
                 }
             }
         }
