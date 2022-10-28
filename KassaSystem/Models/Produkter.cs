@@ -38,27 +38,38 @@ namespace KassaSystem.Models
             _discountEndDate = discountEndDate;
             
         }
-        //PROPERTIES
         public string ProductID 
             { get { return _productID; } set { _productID = value; } }
         public string ProductName
         {
-           get { return _productName; }
+            get { return _productName; }
             set 
             {
                 if (ProductName.Length < 2 || string.IsNullOrEmpty(ProductName) == true)
-                    throw new ArgumentException("Felaktigt inskrivet namn");
+                    throw new ArgumentException("Felaktigt produktnamn");
 
                 _productName = value; 
             }
         }
         public string ProductUnit 
         { 
-            get { return _productUnit; } set { _productUnit = value; } 
+            get { return _productUnit; } 
+            set 
+            {
+                if (ProductUnit.Length < 2 || string.IsNullOrEmpty(ProductUnit) == true)
+                    throw new ArgumentException("Felaktig produktenhet");
+                _productUnit = value; 
+            } 
         }
         public decimal ProductPrice
         {
-            get { return _productPrice; } set { _productPrice = value;}
+            get { return _productPrice; } 
+            set 
+            { 
+                if (ProductPrice < 0)
+                    throw new ArgumentException("Felaktigt pris");  
+                _productPrice = value;
+            }
         }
         public decimal TotalPrice
         {
@@ -70,15 +81,23 @@ namespace KassaSystem.Models
         }
         public string DiscountStartDate
         {
-            get { return _discountStartDate; } set { _discountStartDate = value; }
+            get { return _discountStartDate; } 
+            set { _discountStartDate = value; }
         }
         public string DiscountEndDate
         {
-            get { return _discountEndDate; } set { _discountEndDate = value; }
+            get { return _discountEndDate; } 
+            set { _discountEndDate = value; }
         }
         public decimal DiscountPrice
         {
-            get { return _discountPrice; } set { _discountPrice = value; }
+            get { return _discountPrice; } 
+            set 
+            {
+                if (DiscountPrice < 0)
+                    throw new ArgumentException("Felaktigt pris");
+                _discountPrice = value; 
+            }
         }
         public Products FindProductFromProductID(List<Products> allProducts, string prod)
         {
@@ -89,7 +108,7 @@ namespace KassaSystem.Models
             }
             return null;
         }
-        public void CheckIfDiscount(string id)
+        public Products CheckIfDiscount(string id)
         {
             Admin admin = new();
             var product = admin.FindProductWithId(id);
@@ -102,10 +121,11 @@ namespace KassaSystem.Models
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
                 {   
                     product.ProductPrice = product.DiscountPrice;
-                    Console.WriteLine($"  *KAMPANJPRIS*");
-                    break;
+
+                    return product;
                 }
             }
+            return product;
         }
         public decimal CalculateTotalPriceSingleProduct(int numberOfProducts, decimal price)
         {

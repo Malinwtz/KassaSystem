@@ -40,7 +40,7 @@ namespace KassaSystem
                         {  
                             ShowReceiptHead();
                             allReceipt.ShowListOfProducts();
-                            allReceipt.WriteTotalAmount();
+                            allReceipt.ShowTotalAmount();
                             allReceipt.SaveToReceipt();
                             Console.ReadKey();
                             break;
@@ -52,25 +52,25 @@ namespace KassaSystem
                             Console.WriteLine("Felaktig input");
                                 continue;
                         }
-                        //skriver inte ut rabattpriset när produkten sparas i lista och vid betalning
+
                         else if (currentProduct != null && TryUserInputNumbers(userInput[1]) == true)
                         {
                             var id = currentProduct.ProductID.ToString();
-                            currentProduct.CheckIfDiscount(id);
 
                             var numberOfProducts = Convert.ToInt32(userInput[1]);
                             if (allReceipt.IsListContaining(currentProduct) == true)
                             {
                                 SaveProductIfAlreadyInList(allReceipt, currentProduct, numberOfProducts);
-                                allReceipt.WriteTotalAmount();
+                                allReceipt.ShowTotalAmount();
                             }
                             else if (!allReceipt.IsListContaining(currentProduct))
                             {
+                                currentProduct = currentProduct.CheckIfDiscount(currentProduct.ProductID);
                                 SaveNewProductToLIst(currentProduct, allReceipt, numberOfProducts);
                                 Console.Clear();
                                 Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
                                         $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
-                                allReceipt.WriteTotalAmount();
+                                allReceipt.ShowTotalAmount();
                             }
                         }
                     }

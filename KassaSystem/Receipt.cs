@@ -16,7 +16,6 @@ namespace KassaSystem
         {
 
         }
-
         public List<SingleReceipt> ListOfSingleReceipts
         {
             get { return _listOfSingleReceipts; }
@@ -71,30 +70,22 @@ namespace KassaSystem
             }
             return total;
         }
-        public void WriteTotalAmount()
+        public void ShowTotalAmount()
         {
             Console.WriteLine($"Total: {CalculateTotal()}kr" + Environment.NewLine);
         }
         public bool IsListContaining(Products product)
         {
-            foreach (var row in _listOfSingleReceipts.ToList())
-            {
-                if (row.ProductID == product.ProductID)
-                {
-                    return true;
-                }
-            }
-            return false;
+            var result = _listOfSingleReceipts.FirstOrDefault(p => p.ProductID == product.ProductID);
+            if (result != null) return true;
+            else return false;
         }
         public void ShowListOfProducts()
-        {
-            Admin admin = new();
-            Products p = new();
+        { 
             foreach (var row in _listOfSingleReceipts)
-            {
+            {   
                 Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
-                    $"= {row.Price * row.Count}kr");
-                p.CheckIfDiscount(row.ProductID);
+                $"= {row.Price * row.Count}kr");
             }
         }
     }

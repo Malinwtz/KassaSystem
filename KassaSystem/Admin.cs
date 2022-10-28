@@ -283,15 +283,8 @@ namespace KassaSystem
         public void ShowProductsWithDiscount()
         {
             Console.WriteLine("PRODUKTLISTA");
-            var productList = File.ReadAllLines("Products.txt").ToList();
-            foreach (var row in productList)
-            {
-                row.ToString();
-                var rowArray = row.Split(';');
-                _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(),
-                    rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
-                    rowArray[5], rowArray[6]));
-            }
+            ReadProductsFromTextFile();
+           
             //   _listOfProducts.OrderByDescending();
             foreach (var product in _listOfProducts)
             {
@@ -304,6 +297,19 @@ namespace KassaSystem
                 }
             }
             Console.WriteLine(Environment.NewLine);
+        }
+
+        public void ReadProductsFromTextFile()
+        {
+            var productList = File.ReadAllLines("Products.txt").ToList();
+            foreach (var row in productList)
+            {
+                row.ToString();
+                var rowArray = row.Split(';');
+                _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(),
+                    rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
+                    rowArray[5], rowArray[6]));
+            }
         }
 
         private int ShowMenuChangeProduct()
