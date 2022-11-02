@@ -15,7 +15,7 @@ namespace KassaSystem
         private decimal _totalPrice;
         private int _count;
         public SingleReceipt(string productID, string productName, string productUnit, decimal price,
-            decimal totalPrice, int count)
+            decimal totalPrice, int count)//likadan som produkt
         {
             _productID = productID;
             _productName = productName;

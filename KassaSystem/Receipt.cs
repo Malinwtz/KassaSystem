@@ -60,7 +60,6 @@ namespace KassaSystem
             var total = $"Total: {Convert.ToString(CalculateTotal())}kr";
             File.AppendAllText(fileName, total + Environment.NewLine);
         }
-
         public decimal CalculateTotal()
         {   
             decimal total = 0;
@@ -88,6 +87,39 @@ namespace KassaSystem
                 $"= {row.Price * row.Count}kr");
             }
         }
+        public void SaveDateToProductNameFile()
+        {
+            foreach (var row in ListOfSingleReceipts)
+            {
+                var filename = row.ProductName + ".txt";
+                for (int i = 0; i < row.Count; i++)
+                {
+                    File.AppendAllText(filename, $"{DateTime.Now:yyyy-MM-dd}" + Environment.NewLine);
+                }
+            }
+        }
+        public void ChangeCountToProductsTextFile()
+        {
+            Admin admin = new();
+            AllReceipts allReceipts = new();
+            File.Delete("Products.txt");
+
+            foreach (var row in admin.ListOfProducts) 
+            {
+                int count;  
+                var result = _listOfSingleReceipts.FirstOrDefault(p => p.ProductID == row.ProductID);
+                
+                if (result != null) count = result.Count;
+                else count = 0;
+
+                var product = admin.FindProductWithId(row.ProductID);
+                var line = $"{row.ProductID};{row.ProductName};{row.ProductUnit};{row.ProductPrice};" +
+                    $"{row.DiscountPrice};{row.DiscountStartDate};{row.DiscountEndDate};" +
+                    $"{product.Saldo - count}";
+                File.AppendAllText("Products.txt", line + Environment.NewLine);
+            }
+        }
+        
     }
 }
 /*

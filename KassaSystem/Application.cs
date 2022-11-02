@@ -16,7 +16,7 @@ namespace KassaSystem
     {
         public void Run()
         {   
-            var allProducts = ReadProductsFromFile();
+            var allProducts = ReadProductsFromFile(); 
 
             while (true)
             {
@@ -42,6 +42,8 @@ namespace KassaSystem
                             allReceipt.ShowListOfProducts();
                             allReceipt.ShowTotalAmount();
                             allReceipt.SaveToReceipt();
+                            allReceipt.SaveDateToProductNameFile();
+                            allReceipt.ChangeCountToProductsTextFile();
                             Console.ReadKey();
                             break;
                         }
@@ -75,6 +77,7 @@ namespace KassaSystem
                         }
                     }
                 }
+
                 else if (sel == 2)
                 {
                     Admin admin = new Admin();  
@@ -89,6 +92,20 @@ namespace KassaSystem
                         admin.ShowProductsWithDiscount();
                         Console.ReadKey();
                     }   
+                    else if (sel2 == 4)
+                    {
+                        //visa försäljningsstatistik
+                        /* Man ska kunna ta fram en rapport med mest försäljningsstatistik mellan datum X och Y.
+                         * Vi läser filerna productname.txt* och räknar antalet försäläjningar(rader/strängar) ex.
+                         * 2022-11-02 beroende på vad man angett.
+                         * text: Från och med: 2022-11-01 Tom: 2022-11-02
+                         * Då ska du skapa en rapport som säger
+                         * Bananer 45
+                         * Äpplen 2
+                         * 
+                         * Sortera denna i storleksordning (- split(' ') - parts[1] ???)- OrderByDescending 
+                         */
+                    }
                     else if (sel2 == 0) 
                         break;
                 }
@@ -102,7 +119,6 @@ namespace KassaSystem
                     Console.WriteLine("Felaktig input");
             }
         }
-
         private void SaveProductIfAlreadyInList(AllReceipts allReceipt, Products currentProduct, int numberOfProducts)
         {
             foreach (var row in allReceipt.ListOfSingleReceipts.ToList())
@@ -167,14 +183,15 @@ namespace KassaSystem
             }
             else return true;
         }
-        public List<Products> ReadProductsFromFile()
+        public List<Products> ReadProductsFromFile() 
         {
             var result = new List<Products>();
        
             foreach(var line in File.ReadLines("Products.txt")) 
             {   
                 var parts = line.Split(';');
-                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3])); 
+                var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]),
+                    Convert.ToInt32(parts[4])); 
                 result.Add(product);
             }
             return result;
@@ -186,14 +203,6 @@ namespace KassaSystem
 
 
 //Adminverktyg(VG)
-
-
-
-
-// FELSÖKNING 
-
-
-
 
 //METODER
 

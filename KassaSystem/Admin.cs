@@ -16,7 +16,7 @@ namespace KassaSystem
         private List<Products> _listOfProducts = new List<Products>();
         public Admin()
         {
-
+            _listOfProducts = MakeListOfTextProducts();
         }
         public List<Products> ListOfProducts
         {
@@ -67,7 +67,7 @@ namespace KassaSystem
         }
         public Products FindProductWithId(string id)
         {
-            var productId = MakeListOfTextProducts()
+            var productId = _listOfProducts
                 .FirstOrDefault(p => p.ProductID == id);
             return productId;
         }
@@ -78,7 +78,7 @@ namespace KassaSystem
             {
                 var parts = line.Split(';');
                 var prodct = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0,
-                    Convert.ToDecimal(parts[4]), parts[5], parts[6]);
+                    Convert.ToDecimal(parts[4]), parts[5], parts[6], Convert.ToInt32(parts[7]));
            //     result.Sort(); sortera i nummerordning
                 result.Add(prodct);
             }
@@ -279,7 +279,6 @@ namespace KassaSystem
                 catch { Console.WriteLine("Felaktig input"); }
             }
         }
-        
         public void ShowProductsWithDiscount()
         {
             Console.WriteLine("PRODUKTLISTA");
@@ -335,7 +334,7 @@ namespace KassaSystem
         {
             var line = $"{product.ProductID};{product.ProductName};{product.ProductUnit};{product.ProductPrice}" +
                 $";{product.DiscountPrice};{product.DiscountStartDate};{product.DiscountEndDate}";
-            File.AppendAllText("Products.txt", line + Environment.NewLine);     //lägger till data i EN rad sist i fil
+            File.AppendAllText("Products.txt", line + Environment.NewLine);     
         }
 
         public bool TryUserInputDecimal(string uInput)
@@ -352,19 +351,42 @@ namespace KassaSystem
             Console.WriteLine("1. Skapa ny produkt");
             Console.WriteLine("2. Ta bort eller ändra produkt");
             Console.WriteLine("3. Visa produkter och kampanjpriser");
+            Console.WriteLine("4. Visa försäljningsstatistik");
             Console.WriteLine("0. Avsluta" + Environment.NewLine);
             while (true)
             {
                 var sel = 0;
                 try { sel = Convert.ToInt32(Console.ReadLine()); }
                 catch { Console.WriteLine("Felaktig input"); }
-                if (sel >= 0 && sel <= 3) 
+                if (sel >= 0 && sel <= 4) 
                     return sel;
                 Console.WriteLine("Felaktig input");
             }
         }
     }
 }
+
+//VG: lagersaldo - varje gång man köper produkt så minskar saldot.spara till produkter.txt
+                //det  kan stå minus i lagersaldot
+
+                //rapport med försäljningsstatistik
+                //skapa en lista med datum. gå igenom filerna. Kolla hur många av datumen som är mellan en viss tidpunkt. 
+
+                //I products.txt - lägg till en till kolumn - lagersaldo. Skriv in ett antal av hur många
+                //produkter som finns i lager.
+
+                //När vi kör pay på kvittot - loopa igenom kvittot och
+                //gå in i products.txt och uppdatera kolumnen lagersaldo för den produkten. Ok om det blir minus antal.
+
+                //menyval försälj.statistik
+                //ange startdatum - ska skrivas in i datetime (parseexact?)
+                //ange slutdatum
+                //gå igenom alla produktfiler.
+                //räkna hur många rader som hör till start och slutdatumet.
+                //rapport: bananer 5 och äpplen 3 (mellan just den tidsperioden) ska komma upp i konsolen.
+                //ska visas som den mest sålda först.
+                //kan ha en folder för filerna för att skilja på dem. obs valfritt!
+
 
 //public void DeleteProduct()
 //{

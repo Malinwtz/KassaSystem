@@ -18,15 +18,14 @@ namespace KassaSystem.Models
         private decimal _discountPrice;
         private string _discountStartDate;
         private string _discountEndDate;
-        
-        //CONSTRUCTORS
+        private int _saldo;  
         public Products() 
         {
 
         }
         public Products(string productID, string productName, string productUnit, decimal productPrice,
             decimal totalPrice = 0, decimal discountPrice = 0, string discountStartDate = null, 
-            string discountEndDate = null) 
+            string discountEndDate = null, int saldo = 0) 
         {
             _productID = productID;
             _productName = productName;
@@ -36,7 +35,7 @@ namespace KassaSystem.Models
             _discountPrice = discountPrice;
             _discountStartDate = discountStartDate;
             _discountEndDate = discountEndDate;
-            
+            _saldo = saldo;
         }
         public string ProductID 
             { get { return _productID; } set { _productID = value; } }
@@ -99,6 +98,9 @@ namespace KassaSystem.Models
                 _discountPrice = value; 
             }
         }
+        public int Saldo
+        { get { return _saldo; } set { _saldo = value; } }
+
         public Products FindProductFromProductID(List<Products> allProducts, string prod)
         {
             foreach (var product in allProducts)
