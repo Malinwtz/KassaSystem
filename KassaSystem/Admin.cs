@@ -79,12 +79,11 @@ namespace KassaSystem
             {
                 var parts = line.Split(';');
                 var prodct = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0,
-                    Convert.ToDecimal(parts[4]), parts[5], parts[6], Convert.ToInt32(parts[7]));
-           //     result.Sort(); sortera i nummerordning
+                    Convert.ToDecimal(parts[4]), parts[5], parts[6], Convert.ToInt32(parts[7])); //index was outside bounds of array
+           
                 result.Add(prodct);
             }
             return result;
-            //_listOfProducts.OrderByDescending();
         }
         private decimal TryPrice()
         {
@@ -151,7 +150,7 @@ namespace KassaSystem
                 else break;
             }
 
-            foreach (var row in _listOfProducts.ToList())
+            foreach (var row in _listOfProducts.OrderBy(p => p.ProductID).ToList())
             {
                 if (row.ProductID.ToLower() == selChange.ToLower())
                 {
@@ -257,11 +256,10 @@ namespace KassaSystem
         public void ShowProductsWithDiscount()
         {
             Console.WriteLine("PRODUKTLISTA");
-            ReadProductsFromTextFile();
+            ReadProductsFromTextFile(); 
            
-            //   _listOfProducts.OrderByDescending();
-            foreach (var product in _listOfProducts)
-            {
+            foreach (var product in _listOfProducts.OrderBy(p=>p.ProductID))
+            {  
                 Console.WriteLine($"{product.ProductID};{product.ProductName};{product.ProductUnit};" +
                     $"{product.ProductPrice}kr");
                 if (product.DiscountPrice > 0)
@@ -272,16 +270,17 @@ namespace KassaSystem
             }
             Console.WriteLine(Environment.NewLine);
         }
-        public void ReadProductsFromTextFile()
-        {
+        public void ReadProductsFromTextFile() //blir dubletter av listan, den är med i konstruktorn admin
+        {//blir dubletter i ändra produkter och visa lista
             var productList = File.ReadAllLines("Products.txt").ToList();
+            
             foreach (var row in productList)
             {
                 row.ToString();
                 var rowArray = row.Split(';');
                 _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(),
                     rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
-                    rowArray[5], rowArray[6]));
+                    rowArray[5], rowArray[6])/*, rowArray[7]*/);
             }
         }
         private int ShowMenuChangeProduct()
@@ -349,8 +348,6 @@ namespace KassaSystem
                     Console.WriteLine("Felaktig input");
                 }
             }
-
-            return DateTime.Now;
         }
         public void SalesStatistics()
         {
