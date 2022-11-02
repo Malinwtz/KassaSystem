@@ -83,17 +83,7 @@ namespace KassaSystem
                 result.Add(prodct);
             }
             return result;
-            //
-            //var productList = File.ReadAllLines("Products.txt").ToList();
-            //foreach (var row in productList)
-            //{
-            //    row.ToString();
-            //    var rowArray = row.Split(';');
-            //    _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(),
-            //        rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
-            //        rowArray[5], rowArray[6]));
-            //}
-            ////   _listOfProducts.OrderByDescending();
+            //_listOfProducts.OrderByDescending();
         }
         private decimal TryPrice()
         {
@@ -209,7 +199,6 @@ namespace KassaSystem
                 File.AppendAllText("Products.txt", line + Environment.NewLine);
             }
         }
-
         private void DiscountChoice(Products row)
         {
             Console.WriteLine("1. Skriv in ett nytt pris");
@@ -297,7 +286,6 @@ namespace KassaSystem
             }
             Console.WriteLine(Environment.NewLine);
         }
-
         public void ReadProductsFromTextFile()
         {
             var productList = File.ReadAllLines("Products.txt").ToList();
@@ -310,7 +298,6 @@ namespace KassaSystem
                     rowArray[5], rowArray[6]));
             }
         }
-
         private int ShowMenuChangeProduct()
         {
             Console.WriteLine("1. Ta bort");
@@ -336,7 +323,6 @@ namespace KassaSystem
                 $";{product.DiscountPrice};{product.DiscountStartDate};{product.DiscountEndDate}";
             File.AppendAllText("Products.txt", line + Environment.NewLine);     
         }
-
         public bool TryUserInputDecimal(string uInput)
         {
             if (uInput == null || Convert.ToDecimal(uInput) < 0)
@@ -363,20 +349,65 @@ namespace KassaSystem
                 Console.WriteLine("Felaktig input");
             }
         }
+        public void SalesStatistics()
+        {   
+            var statProductList = new List<Statistics>();
+            Console.WriteLine("Skriv in startdatum: ");
+            var start = Convert.ToDateTime(Console.ReadLine());
+            Console.WriteLine("Skriv in slutdatum: ");
+            var end = Convert.ToDateTime(Console.ReadLine());
+            var ts = Convert.ToInt32((end - start).TotalDays);
+
+            foreach (var p in ListOfProducts)
+            {//lägger in produkter och antal i ny lista
+                if (File.Exists(p.ProductName + ".txt"))
+                {
+                    var list = File.ReadAllLines(p.ProductName + ".txt").ToList(); //gör en lista med produkter
+                    //       var dates = productList.Where(a => a.Convert.ToTimespan == ts );
+
+                    for (var i = 0; i < ts; i++)//för varje dag i vald period
+                    {
+                        //ta ut de rader/datum som är mellan inskriven tidsperiod - räkna hur många
+                        var addedDays = start.AddDays(i);
+
+                        var count = 0;
+                        foreach (var row in list)
+                        {
+                            if (addedDays.ToString() == row.ToString())
+                            {
+                                count++;
+                            }
+                        }
+                        statProductList.Add(new Statistics(p.ProductName, count));
+
+                        //hitta raderna i listan som motsvarar aktuellt datum
+
+                    }
+                }
+            }
+            foreach (var stat in statProductList)
+                Console.WriteLine($"{stat.Name}, {stat.Count}"); //skriver ut produkterna flera ggr men 0 i antal
+
+            Console.ReadKey();§ 
+
+            //visa försäljningsstatistik
+            /* Man ska kunna ta fram en rapport med mest försäljningsstatistik mellan datum X och Y.
+             * Vi läser filerna productname.txt* och räknar antalet försäläjningar(rader/strängar) ex.
+             * 2022-11-02 beroende på vad man angett.
+             * text: Från och med: 2022-11-01 Tom: 2022-11-02
+             * Då ska du skapa en rapport som säger
+             * Bananer 45
+             * Äpplen 2
+             * 
+             * Sortera denna i storleksordning (- split(' ') - parts[1] ???)- OrderByDescending 
+             */
+        }
     }
 }
 
-//VG: lagersaldo - varje gång man köper produkt så minskar saldot.spara till produkter.txt
-                //det  kan stå minus i lagersaldot
-
+//VG: 
                 //rapport med försäljningsstatistik
                 //skapa en lista med datum. gå igenom filerna. Kolla hur många av datumen som är mellan en viss tidpunkt. 
-
-                //I products.txt - lägg till en till kolumn - lagersaldo. Skriv in ett antal av hur många
-                //produkter som finns i lager.
-
-                //När vi kör pay på kvittot - loopa igenom kvittot och
-                //gå in i products.txt och uppdatera kolumnen lagersaldo för den produkten. Ok om det blir minus antal.
 
                 //menyval försälj.statistik
                 //ange startdatum - ska skrivas in i datetime (parseexact?)
@@ -385,6 +416,7 @@ namespace KassaSystem
                 //räkna hur många rader som hör till start och slutdatumet.
                 //rapport: bananer 5 och äpplen 3 (mellan just den tidsperioden) ska komma upp i konsolen.
                 //ska visas som den mest sålda först.
+
                 //kan ha en folder för filerna för att skilja på dem. obs valfritt!
 
 

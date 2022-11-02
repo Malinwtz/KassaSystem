@@ -94,17 +94,7 @@ namespace KassaSystem
                     }   
                     else if (sel2 == 4)
                     {
-                        //visa försäljningsstatistik
-                        /* Man ska kunna ta fram en rapport med mest försäljningsstatistik mellan datum X och Y.
-                         * Vi läser filerna productname.txt* och räknar antalet försäläjningar(rader/strängar) ex.
-                         * 2022-11-02 beroende på vad man angett.
-                         * text: Från och med: 2022-11-01 Tom: 2022-11-02
-                         * Då ska du skapa en rapport som säger
-                         * Bananer 45
-                         * Äpplen 2
-                         * 
-                         * Sortera denna i storleksordning (- split(' ') - parts[1] ???)- OrderByDescending 
-                         */
+                        admin.SalesStatistics();
                     }
                     else if (sel2 == 0) 
                         break;
