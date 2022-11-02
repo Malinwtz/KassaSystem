@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
@@ -232,30 +233,15 @@ namespace KassaSystem
             }
         }
         private void CreateDiscount(Products row)
-        {
-            while (true)
-            {
-                try
-                {
-                    Console.WriteLine("Skriv in startdatum för kampanjpriset (yyyy MM dd) :");
-                    DateTime dateStart = Convert.ToDateTime(Console.ReadLine());
-                    row.DiscountStartDate = dateStart.ToString("yyyy-MM-dd");
-                    break;
-                }
-                catch { Console.WriteLine("Felaktig input"); }
-            }
-            while (true)
-            {
-                try
-                {
-                    Console.WriteLine("Skriv in slutdatum för kampanjpriset (yyyy MM dd) :");
-                    DateTime dateEnd = Convert.ToDateTime(Console.ReadLine());
-                    row.DiscountEndDate = dateEnd.ToString("yyyy-MM-dd");
-                    break;
-                }
-                catch { Console.WriteLine("Felaktig input"); }
-
-            }
+        {   
+            Console.WriteLine("Skriv in startdatum för kampanjpriset (yyyy MM dd) :");
+            var dateStart = TryDate();
+            row.DiscountStartDate = dateStart.ToString("yyyy-MM-dd");
+                   
+            Console.WriteLine("Skriv in slutdatum för kampanjpriset (yyyy MM dd) :");
+            var dateEnd = TryDate();
+            row.DiscountEndDate = dateEnd.ToString("yyyy-MM-dd");
+               
             while (true)
             {
                 try
@@ -349,25 +335,46 @@ namespace KassaSystem
                 Console.WriteLine("Felaktig input");
             }
         }
+        public DateTime TryDate()
+        {
+            while (true)
+            {
+                try
+                {
+                    var date = DateTime.ParseExact(Console.ReadLine(), "yyyy-MM-dd", CultureInfo.CurrentCulture);
+                    return date;
+                }
+                catch
+                {
+                    Console.WriteLine("Felaktig input");
+                }
+            }
+
+            return DateTime.Now;
+        }
         public void SalesStatistics()
-        {   
+        {
+            Console.Clear();
+            Console.WriteLine("FÖRSÄLJNINGSSTATISTIK");
             var statProductList = new List<Statistics>();
+
             Console.WriteLine("Skriv in startdatum: ");
-            var start = Convert.ToDateTime(Console.ReadLine());
+            var start = TryDate();
             Console.WriteLine("Skriv in slutdatum: ");
-            var end = Convert.ToDateTime(Console.ReadLine());
+            var end = TryDate();
+
             var ts = Convert.ToInt32((end - start).TotalDays);
 
             foreach (var p in ListOfProducts)
-            {//lägger in produkter och antal i ny lista
+            {
                 if (File.Exists(p.ProductName + ".txt"))
                 {
-                    var list = File.ReadAllLines(p.ProductName + ".txt").ToList(); //gör en lista med produkter
-                                                                                   //       var dates = productList.Where(a => a.Convert.ToTimespan == ts );
+                    var list = File.ReadAllLines(p.ProductName + ".txt").ToList(); 
+                    //       var dates = productList.Where(a => a.Convert.ToTimespan == ts );
                     var count = 0;
                     foreach (var row in list)
                     {   
-                        for (var i = 0; i <= ts; i++)//för varje dag i vald period
+                        for (var i = 0; i <= ts; i++)
                         {
                             var addedDays = start.AddDays(i);
                             var parts = addedDays.ToString().Split(' ');
@@ -377,7 +384,6 @@ namespace KassaSystem
                                 count++;
                             }
                         }
-                        //hitta raderna i listan som motsvarar aktuellt datum
                     }
                     statProductList.Add(new Statistics(p.ProductName, count));
                 }
@@ -390,32 +396,18 @@ namespace KassaSystem
 
             Console.ReadKey(); 
 
-            //visa försäljningsstatistik
-            /* Man ska kunna ta fram en rapport med mest försäljningsstatistik mellan datum X och Y.
-             * Vi läser filerna productname.txt* och räknar antalet försäläjningar(rader/strängar) ex.
-             * 2022-11-02 beroende på vad man angett.
-             * text: Från och med: 2022-11-01 Tom: 2022-11-02
-             * Då ska du skapa en rapport som säger
-             * Bananer 45
-             * Äpplen 2
-             * 
-             * Sortera denna i storleksordning (- split(' ') - parts[1] ???)- OrderByDescending 
-             */
         }
     }
 }
 
 //VG: 
                 //rapport med försäljningsstatistik
-                //skapa en lista med datum. gå igenom filerna. Kolla hur många av datumen som är mellan en viss tidpunkt. 
+                //skapa en lista med datum. gå igenom filerna. Kolla hur många av
+                //datumen som är mellan en viss tidpunkt. 
 
                 //menyval försälj.statistik
                 //ange startdatum - ska skrivas in i datetime (parseexact?)
                 //ange slutdatum
-                //gå igenom alla produktfiler.
-                //räkna hur många rader som hör till start och slutdatumet.
-                //rapport: bananer 5 och äpplen 3 (mellan just den tidsperioden) ska komma upp i konsolen.
-                //ska visas som den mest sålda först.
 
                 //kan ha en folder för filerna för att skilja på dem. obs valfritt!
 
@@ -430,31 +422,5 @@ namespace KassaSystem
 //    //ta bort objekt från fil
 //}
 
-////SKAPA NYTT OBJEKT AV TYPEN PRODUCT
-//var result = new List<Products>();
-//    //FÖR VARJE RAD I TEXTFILEN 
-//   foreach(var line in File.ReadLines("Products.txt")) 
-//         //ReadAllLines läser ALLA rader och tar upp ram-minne //ReadLines läser EN rad i taget. använd därför denna när läsa filer
-//    {
-//        //DELA RADEN LINE, LÄGG ALLA DELARNA I EN ARRAY 
-//        var parts = line.Split(';');
-////SKAPA NYTT OBJEKT AV PRODUCTS DÄR STRÄNGARNA BLIR PROPERTIES
-//var product = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0);
-////ADDERA TILL PRODUKTLISTAN
-//result.Add(product);
-//    }
 
-//public decimal CheckIfDiscount(Products product) //DateTime start, DateTime end, decimal price
-//{
-//    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && DateTime.Now.Hour < 13)
-//    {
-//        return Convert.ToDecimal(product.ProductPrice);
-//    }
 
-//    else return Convert.ToDecimal(product.ProductPrice);
-//}
-//WriteAllText skriver bara ut sista raden i listan till filen
-//AppendAllText lägger till EN rad sist i filen. Lägger till listan en gång till utan att ta bort den tidigare.
-//CreateText 
-//ReadAllLines läser ALLA rader och tar upp ram-minne 
-//ReadLines läser EN rad i taget. använd därför denna när läsa filer
