@@ -363,32 +363,32 @@ namespace KassaSystem
                 if (File.Exists(p.ProductName + ".txt"))
                 {
                     var list = File.ReadAllLines(p.ProductName + ".txt").ToList(); //gör en lista med produkter
-                    //       var dates = productList.Where(a => a.Convert.ToTimespan == ts );
-
-                    for (var i = 0; i < ts; i++)//för varje dag i vald period
-                    {
-                        //ta ut de rader/datum som är mellan inskriven tidsperiod - räkna hur många
-                        var addedDays = start.AddDays(i);
-
-                        var count = 0;
-                        foreach (var row in list)
+                                                                                   //       var dates = productList.Where(a => a.Convert.ToTimespan == ts );
+                    var count = 0;
+                    foreach (var row in list)
+                    {   
+                        for (var i = 0; i <= ts; i++)//för varje dag i vald period
                         {
-                            if (addedDays.ToString() == row.ToString())
+                            var addedDays = start.AddDays(i);
+                            var parts = addedDays.ToString().Split(' ');
+
+                            if (parts[0] == row)
                             {
                                 count++;
                             }
                         }
-                        statProductList.Add(new Statistics(p.ProductName, count));
-
                         //hitta raderna i listan som motsvarar aktuellt datum
-
                     }
+                    statProductList.Add(new Statistics(p.ProductName, count));
                 }
             }
-            foreach (var stat in statProductList)
-                Console.WriteLine($"{stat.Name}, {stat.Count}"); //skriver ut produkterna flera ggr men 0 i antal
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("Antal sålda produkter under tidsperioden:");
+            var orderedList = statProductList.OrderByDescending(p=>p.Count);
+            foreach (var stat in orderedList)
+                Console.WriteLine($"{stat.Name} {stat.Count}"); //skriver ut produkterna flera ggr men 0 i antal
 
-            Console.ReadKey();§ 
+            Console.ReadKey(); 
 
             //visa försäljningsstatistik
             /* Man ska kunna ta fram en rapport med mest försäljningsstatistik mellan datum X och Y.

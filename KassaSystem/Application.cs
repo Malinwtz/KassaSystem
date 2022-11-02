@@ -86,10 +86,10 @@ namespace KassaSystem
                     if (sel2 == 1)
                         admin.CreateNewProduct();
                     else if (sel2 == 2)
-                        admin.ChangeProduct();
+                        admin.ChangeProduct(); //visar produktlistan två gånger efter varandra
                     else if (sel2 == 3)
                     {
-                        admin.ShowProductsWithDiscount();
+                        admin.ShowProductsWithDiscount(); //visar produktlistan två ggr efter varandra
                         Console.ReadKey();
                     }   
                     else if (sel2 == 4)

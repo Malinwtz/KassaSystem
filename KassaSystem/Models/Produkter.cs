@@ -117,7 +117,7 @@ namespace KassaSystem.Models
             var endDate = Convert.ToDateTime(product.DiscountEndDate);
             var startDate = Convert.ToDateTime(product.DiscountStartDate);
             var days = Convert.ToInt32((endDate - startDate).TotalDays);
-            for (var i = 0; i < days; i++)
+            for (var i = 0; i <= days; i++)
             {
                 var addedDays = startDate.AddDays(i);
                 if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
