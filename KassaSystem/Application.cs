@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,7 +71,8 @@ namespace KassaSystem
                                 SaveNewProductToLIst(currentProduct, allReceipt, numberOfProducts);
                                 Console.Clear();
                                 Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
-                                        $"{currentProduct.ProductPrice} = {currentProduct.TotalPrice}");
+                                        $"{currentProduct.ProductPrice.ToString("F", CultureInfo.InvariantCulture)}" +
+                                        $" = {currentProduct.TotalPrice.ToString("F", CultureInfo.InvariantCulture)}");
                                 allReceipt.ShowTotalAmount();
                             }
                         }

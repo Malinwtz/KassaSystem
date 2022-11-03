@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,7 +72,8 @@ namespace KassaSystem
         }
         public void ShowTotalAmount()
         {
-            Console.WriteLine($"Total: {CalculateTotal()}kr" + Environment.NewLine);
+            Console.WriteLine($"Total: {(CalculateTotal()).ToString("F", CultureInfo.InvariantCulture)}kr" 
+                + Environment.NewLine);
         }
         public bool IsListContaining(Products product)
         {
@@ -83,8 +85,9 @@ namespace KassaSystem
         { 
             foreach (var row in _listOfSingleReceipts)
             {   
-                Console.WriteLine($"{row.ProductName} {row.Count} * {row.Price} " +
-                $"= {row.Price * row.Count}kr");
+                Console.WriteLine($"{row.ProductName} {row.Count} * " +
+                    $"{row.Price.ToString("F", CultureInfo.InvariantCulture)} " +
+                    $"= {(row.Price * row.Count).ToString("F", CultureInfo.InvariantCulture)}kr");
             }
         }
         public void SaveDateToProductNameFile()

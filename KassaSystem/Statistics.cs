@@ -15,5 +15,6 @@ namespace KassaSystem
             Name = name;
             Count = count;  
         }
+
     }
 }
