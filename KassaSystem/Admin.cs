@@ -31,8 +31,8 @@ namespace KassaSystem
             Console.WriteLine("SKAPA NY PRODUKT" + Environment.NewLine);
             Console.WriteLine("PRODUKTLISTA:");
             
-            var result = MakeListOfTextProducts();
-            foreach (var p in result)
+            
+            foreach (var p in _listOfProducts.OrderBy(a=>a.ProductID)) 
             {
                 Console.WriteLine($"{p.ProductID};{ p.ProductName};{p.ProductUnit}; " +
                     $"{p.ProductPrice}");
@@ -47,8 +47,10 @@ namespace KassaSystem
             var newUnit = TryUnit();
             Console.WriteLine("Pris: (per enhet)");
             var newPrice = TryPrice();
+            Console.WriteLine("Skriv in saldo");
+            var newSaldo = TryInt();
 
-            Products product = new Products(newId, newName, newUnit, newPrice);
+            Products product = new Products(newId, newName, newUnit, newPrice, 0, 0, null, null, newSaldo); //lagt till newsaldo
             product.DiscountPrice = 0;
             product.DiscountStartDate = "0001-01-01";
             product.DiscountEndDate = "0001-01-01";
@@ -56,6 +58,21 @@ namespace KassaSystem
 
             Console.WriteLine("Ny produkt sparad" + Environment.NewLine);
         }
+
+        private int TryInt()
+        {
+            while (true)
+            {
+                try
+                {
+                    Int32.TryParse(Console.ReadLine(), out int saldo);
+                    if (saldo > 0)
+                        return saldo;
+                }
+                catch { }
+            }
+        }
+
         public string CheckIfIdExists()
         {
             while (true)
@@ -67,10 +84,10 @@ namespace KassaSystem
             }
         }
         public Products FindProductWithId(string id)
-        {
-            var productId = _listOfProducts
+        {  
+                var productId = _listOfProducts
                 .FirstOrDefault(p => p.ProductID == id);
-            return productId;
+                return productId;
         }
         public List<Products> MakeListOfTextProducts()
         {
@@ -79,9 +96,10 @@ namespace KassaSystem
             {
                 var parts = line.Split(';');
                 var prodct = new Products(parts[0], parts[1], parts[2], Convert.ToDecimal(parts[3]), 0,
-                    Convert.ToDecimal(parts[4]), parts[5], parts[6], Convert.ToInt32(parts[7])); //index was outside bounds of array
+                    Convert.ToDecimal(parts[4]), parts[5], parts[6], Convert.ToInt32(parts[7])); 
            
                 result.Add(prodct);
+
             }
             return result;
         }
@@ -139,7 +157,7 @@ namespace KassaSystem
             Console.WriteLine("ÄNDRA PRODUKT" + Environment.NewLine);
             ShowProductsWithDiscount();
             
-            Console.WriteLine("Skriv in ID på den produkt du vill ändra:");
+            Console.Write("Skriv in ID på den produkt du vill ändra: ");
             var selChange = "";
 
             while (true)
@@ -149,43 +167,43 @@ namespace KassaSystem
                 if (id == null) Console.WriteLine(Environment.NewLine + "ID finns inte");
                 else break;
             }
-
+            //ändra så produktsaldo kan vara alla siffror mellan 001-999
             foreach (var row in _listOfProducts.OrderBy(p => p.ProductID).ToList())
             {
                 if (row.ProductID.ToLower() == selChange.ToLower())
                 {
-                    var select = ShowMenuChangeProduct();
+                    var sel3 = Menu.ChangeProductMenu();
                     
-                    if (select == 1)
+                    if (sel3 == 1)
                     {
                         Console.WriteLine("Tar bort från listan");
                         _listOfProducts.Remove(row);
                     }
-                    else if (select == 2)
+                    else if (sel3 == 2)
                     {
                         Console.WriteLine("Skriv in ett nytt namn på produkten:");
                         row.ProductName = TryName();
                         Console.WriteLine("Namn sparat" + Environment.NewLine );
                     }
-                    else if (select == 3)
+                    else if (sel3 == 3)
                     {   
                         Console.WriteLine("Skriv in ett nytt ID på produkten:");
                         var newId = CheckIfIdExists();
                         row.ProductID = newId;
                         Console.WriteLine("ID sparat" + Environment.NewLine );
                     }
-                    else if (select == 4)
+                    else if (sel3 == 4)
                     {
                         Console.WriteLine("Skriv in en ny enhet på produkten:");
                         row.ProductUnit = TryUnit();
                         Console.WriteLine("Enhet sparad" + Environment.NewLine);
                     }
-                    else if (select == 5)
+                    else if (sel3 == 5)
                     {
                         DiscountChoice(row);
                     }
                     
-                    else if (select == 0)
+                    else if (sel3 == 0)
                         break;
                 }
             }
@@ -195,40 +213,30 @@ namespace KassaSystem
             foreach (var row in _listOfProducts)
             {   
                 var line = $"{row.ProductID};{row.ProductName};{row.ProductUnit};{row.ProductPrice};" +
-                    $"{row.DiscountPrice};{row.DiscountStartDate};{row.DiscountEndDate}";
+                    $"{row.DiscountPrice};{row.DiscountStartDate};{row.DiscountEndDate};{row.Saldo}"; 
                 File.AppendAllText("Products.txt", line + Environment.NewLine);
             }
         }
         private void DiscountChoice(Products row)
         {
-            Console.WriteLine("1. Skriv in ett nytt pris");
-            Console.WriteLine("2. Skriv in ett kampanjpris");
-            Console.WriteLine("0. Tillbaka till huvudmenyn");
             while (true)
             {
-                try
+                var sel4 = Menu.ChangePriceMenu();
+
+                if (sel4 == 1)
                 {
-                    var slct = Convert.ToInt32(Console.ReadLine());
-                    if (slct == 1)
-                    {
-                        Console.WriteLine("Skriv in ett nytt pris på produkten:");
-                        row.ProductPrice = TryPrice();
-                        Console.WriteLine("Pris sparat" + Environment.NewLine);
-                        Console.ReadKey();
-                        break;
-                    }
-                    else if (slct == 2)
-                    {
-                        CreateDiscount(row);
-                        Console.WriteLine(Environment.NewLine + "Kampanjpris sparat");
-                        break;
-                    }
-                    else if (slct == 0)
-                        break;
-                    else
-                        Console.WriteLine("Felaktig input");
+                    Console.WriteLine("Skriv in ett nytt pris på produkten:");
+                    row.ProductPrice = TryPrice();
+                    Console.WriteLine("Pris sparat" + Environment.NewLine);
+                    //Console.ReadKey();
                 }
-                catch { Console.WriteLine("Felaktig input"); }
+                else if (sel4 == 2)
+                {
+                    CreateDiscount(row);
+                    Console.WriteLine(Environment.NewLine + "Kampanjpris sparat");
+                }
+                else if (sel4 == 0)
+                    break;
             }
         }
         private void CreateDiscount(Products row)
@@ -256,22 +264,22 @@ namespace KassaSystem
         public void ShowProductsWithDiscount()
         {
             Console.WriteLine("PRODUKTLISTA");
-            ReadProductsFromTextFile(); 
+            //ReadProductsFromTextFile(); 
            
             foreach (var product in _listOfProducts.OrderBy(p=>p.ProductID))
             {  
                 Console.WriteLine($"{product.ProductID};{product.ProductName};{product.ProductUnit};" +
-                    $"{product.ProductPrice}kr");
+                    $"{product.ProductPrice}kr;{product.Saldo}st i lager");
                 if (product.DiscountPrice > 0)
                 {
-                    Console.WriteLine($"  *KAMPANJPRIS: {product.DiscountPrice}kr; {product.DiscountStartDate:yyyy-MM-dd}" +
-                        $" - {product.DiscountEndDate:yyyy-MM-dd}");
+                    Console.WriteLine($"  *KAMPANJPRIS: {product.DiscountPrice}kr; From {product.DiscountStartDate:yyyy-MM-dd}" +
+                        $" Tom {product.DiscountEndDate:yyyy-MM-dd}*");
                 }
             }
             Console.WriteLine(Environment.NewLine);
         }
-        public void ReadProductsFromTextFile() //blir dubletter av listan, den är med i konstruktorn admin
-        {//blir dubletter i ändra produkter och visa lista
+        public void ReadProductsFromTextFile() 
+        {
             var productList = File.ReadAllLines("Products.txt").ToList();
             
             foreach (var row in productList)
@@ -283,29 +291,11 @@ namespace KassaSystem
                     rowArray[5], rowArray[6])/*, rowArray[7]*/);
             }
         }
-        private int ShowMenuChangeProduct()
-        {
-            Console.WriteLine("1. Ta bort");
-            Console.WriteLine("2. Ändra namn");
-            Console.WriteLine("3. Ändra ID");
-            Console.WriteLine("4. Ändra enhet");
-            Console.WriteLine("5. Ändra pris");
-            Console.WriteLine("Ange val 1-5. Välj 0 för att avbryta." + Environment.NewLine);
-            var select = -1;
-            while (true)
-            {
-                try { select = Convert.ToInt32(Console.ReadLine()); }
-                catch (Exception x) { /* Console.WriteLine(x.Message);*/}
-
-                if (select >= 0 && select <= 5) return select;
-
-                Console.WriteLine("Felaktig input");
-            }
-        }
+      
         private void AddToFile(Products product)
         {
             var line = $"{product.ProductID};{product.ProductName};{product.ProductUnit};{product.ProductPrice}" +
-                $";{product.DiscountPrice};{product.DiscountStartDate};{product.DiscountEndDate}";
+                $";{product.DiscountPrice};{product.DiscountStartDate};{product.DiscountEndDate};{product.Saldo}";
             File.AppendAllText("Products.txt", line + Environment.NewLine);     
         }
         public bool TryUserInputDecimal(string uInput)
@@ -316,24 +306,7 @@ namespace KassaSystem
             }
             else return true;
         }
-        public static int AdminMenu()
-        {
-            Console.WriteLine("ADMINISTRERINGSMENY" + Environment.NewLine);
-            Console.WriteLine("1. Skapa ny produkt");
-            Console.WriteLine("2. Ta bort eller ändra produkt");
-            Console.WriteLine("3. Visa produkter och kampanjpriser");
-            Console.WriteLine("4. Visa försäljningsstatistik");
-            Console.WriteLine("0. Avsluta" + Environment.NewLine);
-            while (true)
-            {
-                var sel = 0;
-                try { sel = Convert.ToInt32(Console.ReadLine()); }
-                catch { Console.WriteLine("Felaktig input"); }
-                if (sel >= 0 && sel <= 4) 
-                    return sel;
-                Console.WriteLine("Felaktig input");
-            }
-        }
+     
         public DateTime TryDate()
         {
             while (true)
@@ -386,10 +359,10 @@ namespace KassaSystem
                 }
             }
             Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("Antal sålda produkter under tidsperioden:");
+            Console.WriteLine($"Från och med: {start:yyyy-MM-dd} Tom:{end:yyyy-MM-dd}");
             var orderedList = statProductList.OrderByDescending(p=>p.Count);
             foreach (var stat in orderedList)
-                Console.WriteLine($"{stat.Name} {stat.Count}"); //skriver ut produkterna flera ggr men 0 i antal
+                Console.WriteLine($"{stat.Name} {stat.Count}");
 
             Console.ReadKey(); 
 
@@ -397,6 +370,9 @@ namespace KassaSystem
     }
 }
 
+//skriva ut siffror med decimaler - nollor 170,00.
+//
+//
 //VG: 
                 //rapport med försäljningsstatistik
                 //skapa en lista med datum. gå igenom filerna. Kolla hur många av

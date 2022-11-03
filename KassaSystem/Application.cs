@@ -16,12 +16,11 @@ namespace KassaSystem
     {
         public void Run()
         {   
-            var allProducts = ReadProductsFromFile(); 
-
+            var allProducts = ReadProductsFromFile(); //makelistofprod en till likadan metod??
+             
             while (true)
             {
-                ShowMenu();
-                var sel = ReturnFromMenu(); 
+                var sel = Menu.CashMenu();
 
                 if (sel == 1)
                 {
@@ -39,12 +38,12 @@ namespace KassaSystem
                         if (input.ToUpper() == "PAY")
                         {  
                             ShowReceiptHead();
-                            allReceipt.ShowListOfProducts();
+                            allReceipt.ShowListOfProducts(); //visa att det är kampanjpris?
                             allReceipt.ShowTotalAmount();
                             allReceipt.SaveToReceipt();
                             allReceipt.SaveDateToProductNameFile();
                             allReceipt.ChangeCountToProductsTextFile();
-                            Console.ReadKey();
+                            Console.ReadKey(); 
                             break;
                         }
 
@@ -82,7 +81,8 @@ namespace KassaSystem
                 {
                     Admin admin = new Admin();  
                     Console.Clear();
-                    var sel2 = Admin.AdminMenu();
+                    var sel2 = Menu.AdminMenu();
+
                     if (sel2 == 1)
                         admin.CreateNewProduct();
                     else if (sel2 == 2)
@@ -91,18 +91,18 @@ namespace KassaSystem
                     {
                         admin.ShowProductsWithDiscount(); //visar produktlistan två ggr efter varandra
                         Console.ReadKey();
-                    }   
+                    }
                     else if (sel2 == 4)
                     {
                         admin.SalesStatistics();
                     }
-                    else if (sel2 == 0) 
-                        break;
+                    else if (sel2 == 0)
+                        Console.Clear(); //break;
                 }
                 else if (sel == 0)
                 {
                     Console.Clear();
-                    Console.WriteLine("Avslutar kassasystem");
+                    Console.WriteLine("Avslutar kassasystem"); 
                     break;
                 }
                 else
@@ -141,30 +141,11 @@ namespace KassaSystem
         {
             Console.WriteLine("Kommandon:");
             Console.WriteLine("<productid> <antal>");
-            Console.WriteLine("Kommando PAY");
-            Console.WriteLine("Kommando:");
+            Console.WriteLine("PAY");
+            Console.Write("Kommando:");
         }
-        private void ShowMenu()
-        {
-            Console.Clear();
-            Console.WriteLine($"KASSA" + Environment.NewLine);
-            Console.WriteLine("1.Ny kund");
-            Console.WriteLine("2.Administreringsverktyg");
-            Console.WriteLine("0.Avsluta" + Environment.NewLine);
-        }
-        public int ReturnFromMenu()
-        {
-            var sel = -1;
-            while (true)
-            {  
-                try { sel = Convert.ToInt32(Console.ReadLine()); }
-                catch (Exception x) { /* Console.WriteLine(x.Message);*/}
-                    
-                if (sel >= 0 && sel <= 3) return sel;
 
-                Console.WriteLine("Felaktig input");
-            }
-        }
+      
         public bool TryUserInputNumbers(string uInput)
         {
             if (uInput == null || Convert.ToInt32(uInput) < 0)

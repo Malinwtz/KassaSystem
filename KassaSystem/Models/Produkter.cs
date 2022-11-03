@@ -110,21 +110,26 @@ namespace KassaSystem.Models
             }
             return null;
         }
+        
         public Products CheckIfDiscount(string id)
         {
             Admin admin = new();
-            var product = admin.FindProductWithId(id);
-            var endDate = Convert.ToDateTime(product.DiscountEndDate);
-            var startDate = Convert.ToDateTime(product.DiscountStartDate);
-            var days = Convert.ToInt32((endDate - startDate).TotalDays);
-            for (var i = 0; i <= days; i++)
-            {
-                var addedDays = startDate.AddDays(i);
-                if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
-                {   
-                    product.ProductPrice = product.DiscountPrice;
 
-                    return product;
+            var product = admin.FindProductWithId(id);
+            if (product != null)
+            {
+                var endDate = Convert.ToDateTime(product.DiscountEndDate); //object reference not set to an instance of an object/product was null
+                var startDate = Convert.ToDateTime(product.DiscountStartDate);
+                var days = Convert.ToInt32((endDate - startDate).TotalDays);
+                for (var i = 0; i <= days; i++)
+                {
+                    var addedDays = startDate.AddDays(i);
+                    if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
+                    {
+                        product.ProductPrice = product.DiscountPrice;
+
+                        return product;
+                    }
                 }
             }
             return product;
