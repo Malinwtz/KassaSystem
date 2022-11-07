@@ -75,21 +75,16 @@ namespace KassaSystem
             {
                 try
                 {
-                    var newId = Convert.ToInt32(Console.ReadLine());
-                    if (newId.ToString().Count() == 3)
-                        return Convert.ToString(newId);
+                    var newId = Console.ReadLine();
+                    if (newId.Length == 3)
+                    {
+                        var id = Convert.ToInt32(newId);
+                        return Convert.ToString(id);
+                    }   
                     else Console.WriteLine("Felaktig input");
                 }
                 catch { Console.WriteLine("Felaktig input"); }
             }
-        }
-        public static bool TryDecimal(string uInput) //används ej??
-        {
-            if (uInput == null || Convert.ToDecimal(uInput) < 0)
-            {
-                return false;
-            }
-            else return true;
         }
     }
 }

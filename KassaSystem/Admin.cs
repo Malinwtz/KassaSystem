@@ -24,7 +24,6 @@ namespace KassaSystem
             get { return _listOfProducts; }
             set { _listOfProducts = value; }
         }
-       
         public void CreateNewProduct()
         {   
             Console.Clear();
@@ -44,12 +43,12 @@ namespace KassaSystem
             var newName = ErrorHandling.TryName();
             Console.Write("Enhet (kilopris/styckpris) : ");
             var newUnit = ErrorHandling.TryUnit();
-            Console.Write("Pris (00,00) : ");
+            Console.Write("Pris: ");
             var newPrice = ErrorHandling.TryPrice();
             Console.Write("Skriv in saldo: ");
             var newSaldo = ErrorHandling.TryInt();
 
-            Products product = new Products(newId, newName, newUnit, newPrice, 0, 0, null, null, newSaldo); //lagt till newsaldo
+            Products product = new Products(newId, newName, newUnit, newPrice, 0, 0, null, null, newSaldo); 
             product.DiscountPrice = 0;
             product.DiscountStartDate = "0001-01-01";
             product.DiscountEndDate = "0001-01-01";
@@ -74,6 +73,7 @@ namespace KassaSystem
                 return productId;
         }
         public List<Products> MakeListOfTextProducts()
+            // gör en ny Products list// för varje var i Products.txt - spara produkt till listan//RETURN List<Products> (SPARAR ÄVEN SALDO)
         {
             var result = new List<Products>();
             foreach (var line in File.ReadLines("Products.txt"))
@@ -83,11 +83,9 @@ namespace KassaSystem
                     Convert.ToDecimal(parts[4]), parts[5], parts[6], Convert.ToInt32(parts[7])); 
            
                 result.Add(prodct);
-
             }
             return result;
         }
-       
         public void ChangeProduct()
         {
             Console.Clear();
@@ -164,7 +162,6 @@ namespace KassaSystem
                     Console.Write("Skriv in ett nytt pris på produkten (00,00) : ");
                     row.ProductPrice = ErrorHandling.TryPrice();
                     Console.WriteLine("Pris sparat" + Environment.NewLine);
-                    //Console.ReadKey();
                 }
                 else if (sel4 == 2)
                 {
@@ -189,7 +186,7 @@ namespace KassaSystem
             {
                 try
                 {
-                    Console.Write("Skriv in kampanjpris (00,00): ");
+                    Console.Write("Skriv in kampanjpris: ");
                     decimal discount = Convert.ToDecimal(Console.ReadLine());
                     row.DiscountPrice = discount;
                     break;
@@ -215,6 +212,7 @@ namespace KassaSystem
             Console.WriteLine(Environment.NewLine);
         }
         public void ReadProductsFromTextFile() 
+            //läser från products.txt//för varje rad i den return. listan - spara till _listofproducts// VOID (SPARAR INTE SALDO)
         {
             var productList = File.ReadAllLines("Products.txt").ToList();
             
@@ -224,21 +222,19 @@ namespace KassaSystem
                 var rowArray = row.Split(';');
                 _listOfProducts.Add(new Products(rowArray[0].ToString(), rowArray[1].ToString(),
                     rowArray[2].ToString(), Convert.ToDecimal(rowArray[3]), 0, Convert.ToDecimal(rowArray[4]),
-                    rowArray[5], rowArray[6])/*, rowArray[7]*/);
+                    rowArray[5], rowArray[6]));
             }
         }
-      
-        private void AddToFile(Products product)
+        private void AddToFile(Products product) 
         {
             var line = $"{product.ProductID};{product.ProductName};{product.ProductUnit};{product.ProductPrice}" +
                 $";{product.DiscountPrice};{product.DiscountStartDate};{product.DiscountEndDate};{product.Saldo}";
-            File.AppendAllText("Products.txt", line + Environment.NewLine);     
+            File.AppendAllText("Products.txt", line + Environment.NewLine);
         }
-       
         public void SalesStatistics()
         {
             Console.Clear();
-            Console.WriteLine("FÖRSÄLJNINGSSTATISTIK");
+            Console.WriteLine("FÖRSÄLJNINGSSTATISTIK" + Environment.NewLine);
             var statProductList = new List<Statistics>();
 
             Console.Write("Skriv in startdatum (yyyy-MM-dd) : ");
@@ -272,31 +268,16 @@ namespace KassaSystem
                 }
             }
             Console.Clear();
-            //Console.WriteLine(Environment.NewLine);
             Console.WriteLine($"Från och med: {start:yyyy-MM-dd} Tom:{end:yyyy-MM-dd}");
             var orderedList = statProductList.OrderByDescending(p=>p.Count);
             foreach (var stat in orderedList)
                 Console.WriteLine($"{stat.Name} {stat.Count}");
 
             Console.ReadKey(); 
-
         }
     }
 }
 
-//skriva ut siffror med decimaler - nollor 170,00.
-//
-//
-//VG: 
-                //rapport med försäljningsstatistik
-                //skapa en lista med datum. gå igenom filerna. Kolla hur många av
-                //datumen som är mellan en viss tidpunkt. 
-
-                //menyval försälj.statistik
-                //ange startdatum - ska skrivas in i datetime (parseexact?)
-                //ange slutdatum
-
-                //kan ha en folder för filerna för att skilja på dem. obs valfritt!
 
 
 //public void DeleteProduct()

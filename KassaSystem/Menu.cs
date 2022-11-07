@@ -32,7 +32,7 @@ namespace KassaSystem
         public static int ChangeProductMenu()
         {
             Console.Clear();
-            Console.WriteLine("ÄNDRA PRODUKT");
+            Console.WriteLine("ÄNDRA PRODUKT" + Environment.NewLine);
             Console.WriteLine("1. Ta bort");
             Console.WriteLine("2. Ändra namn");
             Console.WriteLine("3. Ändra ID");
@@ -45,10 +45,10 @@ namespace KassaSystem
         public static int ChangePriceMenu()
         {
             Console.Clear();
-            Console.WriteLine("ÄNDRA PRIS");
+            Console.WriteLine("ÄNDRA PRIS" + Environment.NewLine);
             Console.WriteLine("1. Skriv in ett nytt pris");
             Console.WriteLine("2. Skriv in ett kampanjpris");
-            Console.WriteLine("0. Tillbaka till huvudmenyn");
+            Console.WriteLine("0. Tillbaka till huvudmenyn" + Environment.NewLine);
             var sel = ReturnFromMenu(0, 2);
             return sel;
         }

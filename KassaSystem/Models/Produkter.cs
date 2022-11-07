@@ -101,24 +101,13 @@ namespace KassaSystem.Models
         public int Saldo
         { get { return _saldo; } set { _saldo = value; } }
 
-        public Products FindProductFromProductID(List<Products> allProducts, string prod)
-        {
-            foreach (var product in allProducts)
-            {
-                if (product.ProductID.ToLower() == prod.ToLower())
-                    return product;
-            }
-            return null;
-        }
-        
         public Products CheckIfDiscount(string id)
         {
             Admin admin = new();
-
             var product = admin.FindProductWithId(id);
             if (product != null)
             {
-                var endDate = Convert.ToDateTime(product.DiscountEndDate); //object reference not set to an instance of an object/product was null
+                var endDate = Convert.ToDateTime(product.DiscountEndDate);
                 var startDate = Convert.ToDateTime(product.DiscountStartDate);
                 var days = Convert.ToInt32((endDate - startDate).TotalDays);
                 for (var i = 0; i <= days; i++)
@@ -127,7 +116,6 @@ namespace KassaSystem.Models
                     if (addedDays.ToString("yy-MM-dd") == DateTime.Today.ToString("yy-MM-dd"))
                     {
                         product.ProductPrice = product.DiscountPrice;
-
                         return product;
                     }
                 }
