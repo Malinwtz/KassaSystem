@@ -44,7 +44,7 @@ namespace KassaSystem.Models
             get { return _productName; }
             set 
             {
-                if (ProductName.Length < 3 || string.IsNullOrEmpty(ProductName) == true)
+                if (ProductName.Length < 1 || string.IsNullOrEmpty(ProductName) == true)
                     throw new ArgumentException("Felaktigt produktnamn");
 
                 _productName = value; 
