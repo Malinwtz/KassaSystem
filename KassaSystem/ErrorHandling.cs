@@ -75,12 +75,9 @@ namespace KassaSystem
             {
                 try
                 {
-                    var newId = Console.ReadLine();
-                    if (newId.Length == 3)
-                    {
-                        var id = Convert.ToInt32(newId);
-                        return Convert.ToString(id);
-                    }   
+                    var newId = Convert.ToInt32(Console.ReadLine());
+                    if (newId >= 1)
+                       return Convert.ToString(newId);
                     else Console.WriteLine("Felaktig input");
                 }
                 catch { Console.WriteLine("Felaktig input"); }
