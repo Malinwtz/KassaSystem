@@ -61,11 +61,11 @@ internal class Menu
             }
             catch
             {
-                Console.WriteLine("Felaktig input");
+                ErrorHandling.ErrorMessage();
             }
 
             if (sel >= min && sel <= max) return sel;
-            Console.WriteLine("Felaktig input");
+            ErrorHandling.ErrorMessage();
         }
     }
 }

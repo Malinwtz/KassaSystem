@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Runtime.CompilerServices;
 using KassaSystem.Models;
 
 namespace KassaSystem;
@@ -8,68 +9,16 @@ public class Application
     public void Run()
     {
         while (true)
-        {
-            var admin = new Admin();
+        {   
             var sel = Menu.CashMenu();
 
             if (sel == 1)
             {
-                AllReceipts allReceipt = new();
-                
-                Console.Clear();
-
-                while (true)
-                {
-                    ShowCommands();
-                    var input = Console.ReadLine().Trim();
-                    var userInput = input.Split(' ');
-                    var currentProduct = admin.FindProductWithId(userInput[0]);
-
-                    if (input.ToUpper() == "PAY")
-                    {
-                        ShowReceiptHead();
-                        allReceipt.ShowListOfProducts();
-                        allReceipt.ShowTotalAmount();
-                        allReceipt.SaveToReceipt();
-                        allReceipt.SaveDateToProductNameFile();
-                        allReceipt.ChangeCountToProductsTextFile();
-                        Console.ReadKey();
-                        break;
-                    }
-
-                    if (userInput.Length != 2 || currentProduct == null || userInput[1] == null
-                        || TryUserInputNumbers(userInput[1]) == false)
-                    {
-                        ErrorHandling.ErrorMessage();
-                        continue;
-                    }
-
-                    if (currentProduct != null && TryUserInputNumbers(userInput[1]))
-                    {
-                        var id = currentProduct.ProductID;
-
-                        var numberOfProducts = Convert.ToInt32(userInput[1]);
-                        if (allReceipt.IsListContaining(currentProduct))
-                        {
-                            SaveProductIfAlreadyInList(allReceipt, currentProduct, numberOfProducts);
-                            allReceipt.ShowTotalAmount();
-                        }
-                        else if (!allReceipt.IsListContaining(currentProduct))
-                        {
-                            currentProduct = currentProduct.CheckIfDiscount(currentProduct.ProductID);
-                            SaveNewProductToLIst(currentProduct, allReceipt, numberOfProducts);
-                            Console.Clear();
-                            Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
-                                              $"{currentProduct.ProductPrice.ToString("F", CultureInfo.InvariantCulture)}" +
-                                              $" = {currentProduct.TotalPrice.ToString("F", CultureInfo.InvariantCulture)}");
-                            allReceipt.ShowTotalAmount();
-                        }
-                    }
-                }
+                CashSystem();
             }
-
             else if (sel == 2)
             {
+                var admin = new Admin();
                 admin.AdminOptions();
             }
             else if (sel == 0)
@@ -78,14 +27,65 @@ public class Application
                 Console.WriteLine("Avslutar kassasystem");
                 break;
             }
-            else
+        }
+    }
+
+    private void CashSystem()
+    {
+        AllReceipts allReceipt = new();
+        Console.Clear();
+
+        while (true)
+        {
+            ShowCommands();
+            var input = Console.ReadLine().Trim();
+            var userInput = input.Split(' ');
+            var admin = new Admin();
+            var currentProduct = admin.FindProductWithId(userInput[0]);
+
+            if (input.ToUpper() == "PAY")
+            {
+                ShowReceiptHead();
+                allReceipt.ShowListOfProducts();
+                allReceipt.ShowTotalAmount();
+                allReceipt.SaveToReceipt();
+                allReceipt.SaveDateToProductNameFile();
+                allReceipt.ChangeCountToProductsTextFile();
+                Console.ReadKey();
+                break;
+            }
+
+            if (userInput.Length != 2 || currentProduct == null || userInput[1] == null
+                || TryUserInputNumbers(userInput[1]) == false)
             {
                 ErrorHandling.ErrorMessage();
+                continue;
+            }
+
+            if (currentProduct != null && TryUserInputNumbers(userInput[1]))
+            {
+                var id = currentProduct.ProductID;
+
+                var numberOfProducts = Convert.ToInt32(userInput[1]);
+                if (allReceipt.IsListContaining(currentProduct))
+                {
+                    SaveProductIfAlreadyInList(allReceipt, currentProduct, numberOfProducts);
+                    allReceipt.ShowTotalAmount();
+                }
+                else if (!allReceipt.IsListContaining(currentProduct))
+                {
+                    currentProduct = currentProduct.CheckIfDiscount(currentProduct.ProductID);
+                    SaveNewProductToLIst(currentProduct, allReceipt, numberOfProducts);
+                    Console.Clear();
+                    Console.WriteLine($"{currentProduct.ProductName} {currentProduct.Count} * " +
+                                      $"{currentProduct.ProductPrice.ToString("F", CultureInfo.InvariantCulture)}" +
+                                      $" = {currentProduct.TotalPrice.ToString("F", CultureInfo.InvariantCulture)}");
+                    allReceipt.ShowTotalAmount();
+                }
             }
         }
     }
 
-   
 
     private void SaveProductIfAlreadyInList(AllReceipts allReceipt, Products currentProduct, int numberOfProducts)
     {

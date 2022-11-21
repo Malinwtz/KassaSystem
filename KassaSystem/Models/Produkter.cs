@@ -7,7 +7,6 @@ public class Products
     private decimal _productPrice;
     private string _productUnit;
 
-
     public Products()
     {
     }
