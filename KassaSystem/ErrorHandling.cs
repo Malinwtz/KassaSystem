@@ -1,87 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
-namespace KassaSystem
+namespace KassaSystem;
+
+internal class ErrorHandling
 {
-    internal class ErrorHandling
+    public static void ErrorMessage()
     {
-        public static DateTime TryDate()
-        {
-            while (true)
+        Console.WriteLine("Felaktig input");
+    }
+    public static DateTime TryDate()
+    {
+        while (true)
+            try
             {
-                try
-                {
-                    var date = DateTime.ParseExact(Console.ReadLine(), "yyyy-MM-dd", CultureInfo.CurrentCulture);
-                    return date;
-                }
-                catch {Console.WriteLine("Felaktig input");}
+                var date = DateTime.ParseExact(Console.ReadLine(), "yyyy-MM-dd", CultureInfo.CurrentCulture);
+                return date;
             }
-        }
+            catch
+            {
+                ErrorMessage();
+            }
+    }
 
-        public static int TryInt()
-        {
-            while (true)
+    public static int TryInt()
+    {
+        while (true)
+            try
             {
-                try
-                {
-                    Int32.TryParse(Console.ReadLine(), out int saldo);
-                    if (saldo > 0)
-                        return saldo;
-                }
-                catch { }
+                int.TryParse(Console.ReadLine(), out var saldo);
+                if (saldo > 0)
+                    return saldo;
             }
-        }
-        public static decimal TryPrice()
-        {
-            while (true)
+            catch
             {
-                try
-                {
-                    var price = Convert.ToDecimal(Console.ReadLine());
-                    if (price >= 1)
-                    {
-                        return price;
-                    }
-                    Console.WriteLine("Felaktig input");
-                }
-                catch { Console.WriteLine("Felaktig input"); }
             }
-        }
-        public static string TryUnit()
-        {
-            while (true)
+    }
+
+    public static decimal TryPrice()
+    {
+        while (true)
+            try
             {
-                var unit = Console.ReadLine();
-                if (unit == "kilopris" || unit == "styckpris") return unit;
-                else Console.WriteLine("Felaktig input");
+                var price = Convert.ToDecimal(Console.ReadLine());
+                if (price >= 1) return price;
+                ErrorMessage();
             }
-        }
-        public static string TryName()
-        {
-            while (true)
+            catch
             {
-                var name = Console.ReadLine();
-                if (name != null && name.Length > 1) return name;
-                else Console.WriteLine("Felaktig input");
+                ErrorMessage();
             }
-        }
-        public static string TryId()
+    }
+
+    public static string TryUnit()
+    {
+        while (true)
         {
-            while (true)
-            {
-                try
-                {
-                    var newId = Convert.ToInt32(Console.ReadLine());
-                    if (newId >= 1)
-                       return Convert.ToString(newId);
-                    else Console.WriteLine("Felaktig input");
-                }
-                catch { Console.WriteLine("Felaktig input"); }
-            }
+            var unit = Console.ReadLine();
+            if (unit == "kilopris" || unit == "styckpris") return unit;
+            ErrorMessage();
         }
+    }
+
+    public static string TryName()
+    {
+        while (true)
+        {
+            var name = Console.ReadLine();
+            if (name != null && name.Length > 1) return name;
+            ErrorMessage();
+        }
+    }
+
+    public static string TryId()
+    {
+        while (true)
+            try
+            {
+                var newId = Convert.ToInt32(Console.ReadLine());
+                if (newId >= 1)
+                    return Convert.ToString(newId);
+                ErrorMessage();
+            }
+            catch
+            {
+                ErrorMessage();
+            }
     }
 }
